@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base64 Encoder/Decoder & AES Encryptor/Decryptor</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600&display=swap">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to right, #add8e6, #87ceeb, #4682b4, #5f9ea0);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            border-radius: 24px; /* Increased rounded corners for the body container */
+        }
+
+        .container {
+            width: 90%;
+            max-width: 900px;
+            height: 90%;
+            padding: 20px;
+            background: #fff;
+            color: #333;
+            border-radius: 16px; /* Increased rounded corners for the main container */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            overflow-y: auto;
+        }
+
+        textarea, input[type="text"], input[type="file"], select {
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px; /* Increased rounded corners for inputs */
+            font-size: 16px;
+            font-family: 'Poppins', sans-serif;
+            background-color: #f9f9f9;
+        }
+
+        button {
+            display: inline-block;
+            margin: 5px 10px;
+            padding: 12px 24px;
+            border: none;
+            background: linear-gradient(to right, #87cefa, #1e90ff);
+            color: white;
+            cursor: pointer;
+            border-radius: 8px; /* Increased rounded corners for buttons */
+            font-size: 16px;
+            font-family: 'Poppins', sans-serif;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        button:hover {
+            background: linear-gradient(to right, #6ca6cd, #4682b4);
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        h2 {
+            font-size: 22px;
+            font-weight: 600;
+            margin: 20px 0 10px;
+            color: #333;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            background-color: #f3f3f3;
+            border-radius: 8px; /* Increased rounded corners for progress bar container */
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-bar {
+            width: 0;
+            height: 20px;
+            background: linear-gradient(to right, #87cefa, #1e90ff);
+            transition: width 0.4s ease;
+        }
+
+        .error-message {
+            color: red;
+            margin-top: 10px;
+        }
+
+        .download-link {
+            display: none;
+            margin-top: 10px;
+        }
+
+        .image-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px; /* Increased rounded corners for images */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .pdf-download-container {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        a.download-link {
+            text-decoration: none;
+            color: #1e90ff;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        a.download-link:hover {
+            color: #4682b4;
+        }
+
+        @media (max-height: 600px) {
+            .container {
+                height: auto;
+                overflow-y: auto;
+                padding-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Base64 Encoder/Decoder & AES Encryptor/Decryptor</h1>
+
+        <select id="operation-selector" onchange="showSection()">
+            <option value="">Select Operation</option>
+            <option value="text">Encode/Decode Text</option>
+            <option value="image">Encode/Decode Image</option>
+            <option value="pdf">Encode/Decode PDF</option>
+            <option value="xml">Encode/Decode XML</option>
+            <option value="message">Encrypt/Decrypt Message</option>
+        </select>
+
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+
+        <div id="text-section" class="section">
+            <h2>Encode/Decode Text</h2>
+            <textarea id="text-input" rows="4" placeholder="Enter text to encode"></textarea>
+            <button onclick="encodeText()">Encode</button>
+            <textarea class="result-textarea" id="encoded-text-result" placeholder="Encoded text will appear here"></textarea>
+            <button onclick="decodeText()">Decode</button>
+            <textarea class="result-textarea" id="decoded-text-result" placeholder="Decoded text will appear here"></textarea>
+        </div>
+
+        <div id="image-section" class="section">
+            <h2>Encode/Decode Image</h2>
+            <input type="file" id="image-input">
+            <button onclick="encodeImage()">Encode</button>
+            <textarea class="result-textarea" id="image-encoded-result" placeholder="Encoded image base64 will appear here"></textarea>
+            <button onclick="decodeImage()">Decode</button>
+            <div class="image-container">
+                <canvas id="canvas"></canvas>
+                <img id="image-result" src="#" alt="Decoded Image" style="display:none;">
+                <a id="download-link" class="download-link" download="decoded-image.jpg">Download Decoded Image</a>
+                <div id="image-error" class="error-message" style="display:none;">Invalid Base64 string for image.</div>
+            </div>
+        </div>
+
+        <div id="pdf-section" class="section">
+            <h2>Encode/Decode PDF</h2>
+            <input type="file" id="pdf-input" accept=".pdf">
+            <button onclick="encodePDF()">Encode</button>
+            <textarea class="result-textarea" id="pdf-encoded-result" placeholder="Encoded PDF Base64 will appear here"></textarea>
+            <textarea class="result-textarea" id="pdf-encoded-input" placeholder="Enter Base64 PDF to Decode"></textarea>
+            <button onclick="decodePDF()">Decode</button>
+            <div class="pdf-download-container">
+                <a id="pdf-result" class="download-link" style="display:none;" download="decoded.pdf">Download Decoded PDF</a>
+            </div>
+        </div>
+
+        <div id="xml-section" class="section">
+            <h2>Encode/Decode XML</h2>
+            <textarea id="xml-input" rows="4" placeholder="Enter XML content to encode"></textarea>
+            <button onclick="encodeXML()">Encode</button>
+            <textarea class="result-textarea" id="encoded-xml-result" placeholder="Encoded XML Base64 will appear here"></textarea>
+            <textarea class="result-textarea" id="xml-encoded-input" placeholder="Enter Base64 XML to Decode"></textarea>
+            <button onclick="decodeXML()">Decode</button>
+            <textarea class="result-textarea" id="decoded-xml-result" placeholder="Decoded XML will appear here"></textarea>
+        </div>
+
+        <div id="message-section" class="section">
+            <h2>Encrypt/Decrypt Message</h2>
+            <textarea id="message-input" rows="4" placeholder="Enter message to encrypt"></textarea>
+            <input type="text" id="key-input" placeholder="Enter encryption key (32 characters)">
+            <button onclick="encryptMessage()">Encrypt</button>
+            <textarea class="result-textarea" id="encrypted-message-result" placeholder="Encrypted message will appear here"></textarea>
+            <button onclick="decryptMessage()">Decrypt</button>
+            <textarea class="result-textarea" id="decrypted-message-result" placeholder="Decrypted message will appear here"></textarea>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.js"></script>
+    <script>
+        function showSection() {
+            const progressBar = document.getElementById('progress-bar');
+            const operation = document.getElementById('operation-selector').value;
+
+            progressBar.style.width = '100%';
+
+            document.getElementById('text-section').style.display = 'none';
+            document.getElementById('image-section').style.display = 'none';
+            document.getElementById('pdf-section').style.display = 'none';
+            document.getElementById('xml-section').style.display = 'none';
+            document.getElementById('message-section').style.display = 'none';
+
+            clearAllInputs();
+
+            if (operation === 'text') {
+                document.getElementById('text-section').style.display = 'block';
+            } else if (operation === 'image') {
+                document.getElementById('image-section').style.display = 'block';
+            } else if (operation === 'pdf') {
+                document.getElementById('pdf-section').style.display = 'block';
+            } else if (operation === 'xml') {
+                document.getElementById('xml-section').style.display = 'block';
+            } else if (operation === 'message') {
+                document.getElementById('message-section').style.display = 'block';
+            }
+
+            setTimeout(() => {
+                progressBar.style.width = '0'; // Reset the progress bar
+            }, 1000);
+        }
+
+        function clearAllInputs() {
+            document.getElementById('text-input').value = '';
+            document.getElementById('encoded-text-result').value = '';
+            document.getElementById('decoded-text-result').value = '';
+
+            document.getElementById('image-input').value = '';
+            document.getElementById('image-encoded-result').value = '';
+            document.getElementById('image-result').style.display = 'none';
+            document.getElementById('download-link').style.display = 'none';
+            document.getElementById('image-error').style.display = 'none';
+
+            document.getElementById('pdf-encoded-input').value = '';
+            document.getElementById('pdf-encoded-result').value = '';
+            document.getElementById('pdf-result').style.display = 'none';
+
+            document.getElementById('xml-input').value = '';
+            document.getElementById('encoded-xml-result').value = '';
+            document.getElementById('xml-encoded-input').value = '';
+            document.getElementById('decoded-xml-result').value = '';
+
+            document.getElementById('message-input').value = '';
+            document.getElementById('key-input').value = '';
+            document.getElementById('encrypted-message-result').value = '';
+            document.getElementById('decrypted-message-result').value = '';
+        }
+
+        function isValidBase64String(base64String) {
+            const regex = /^([0-9a-zA-Z+/]{4})*(?:(?:[0-9a-zA-Z+/]{2}==)|(?:[0-9a-zA-Z+/]{3}=))?$/;
+            return regex.test(base64String);
+        }
+
+        function encodeText() {
+            const text = document.getElementById('text-input').value;
+            const encodedText = btoa(text);
+            document.getElementById('encoded-text-result').value = encodedText;
+        }
+
+        function decodeText() {
+            const encodedText = document.getElementById('encoded-text-result').value;
+            try {
+                const decodedText = atob(encodedText);
+                document.getElementById('decoded-text-result').value = decodedText;
+            } catch (e) {
+                document.getElementById('decoded-text-result').value = 'Invalid Base64 string.';
+            }
+        }
+
+        function encodeImage() {
+            const file = document.getElementById('image-input').files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function () {
+                    const base64String = reader.result.split(',')[1];
+                    document.getElementById('image-encoded-result').value = base64String;
+                    document.getElementById('image-result').style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function decodeImage() {
+            const base64String = document.getElementById('image-encoded-result').value;
+            const imageError = document.getElementById('image-error');
+            const displayImage = document.getElementById('image-result');
+            const downloadLink = document.getElementById('download-link');
+
+            if (isValidBase64String(base64String)) {
+                imageError.style.display = 'none';
+                const imgSrc = 'data:image/jpeg;base64,' + base64String;
+                displayImage.src = imgSrc;
+                displayImage.style.display = 'block';
+                downloadLink.href = imgSrc;
+                downloadLink.style.display = 'inline-block';
+            } else {
+                displayImage.style.display = 'none';
+                downloadLink.style.display = 'none';
+                imageError.style.display = 'block';
+            }
+        }
+
+        function encodePDF() {
+            const file = document.getElementById('pdf-input').files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function () {
+                    const base64String = reader.result.split(',')[1];
+                    document.getElementById('pdf-encoded-result').value = base64String;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function decodePDF() {
+            const base64String = document.getElementById('pdf-encoded-input').value;
+            const link = document.getElementById('pdf-result');
+
+            if (isValidBase64String(base64String)) {
+                const pdfData = Uint8Array.from(atob(base64String), c => c.charCodeAt(0));
+                const pdfBlob = new Blob([pdfData], { type: 'application/pdf' });
+                link.href = URL.createObjectURL(pdfBlob);
+                link.style.display = 'block';
+            } else {
+                link.style.display = 'none';
+                alert('Invalid Base64 string for PDF.');
+            }
+        }
+
+        function encodeXML() {
+            const xml = document.getElementById('xml-input').value;
+            const encodedXML = btoa(xml);
+            document.getElementById('encoded-xml-result').value = encodedXML;
+        }
+
+        function decodeXML() {
+            const encodedXML = document.getElementById('xml-encoded-input').value;
+            try {
+                const decodedXML = atob(encodedXML);
+                document.getElementById('decoded-xml-result').value = decodedXML;
+            } catch (e) {
+                document.getElementById('decoded-xml-result').value = 'Invalid Base64 string.';
+            }
+        }
+
+        function encryptMessage() {
+            const message = document.getElementById('message-input').value;
+            const key = document.getElementById('key-input').value;
+
+            if (!message || !key) {
+                document.getElementById('encrypted-message-result').value = 'Message and key are required.';
+                return;
+            }
+
+            if (key.length !== 32) {
+                document.getElementById('encrypted-message-result').value = 'Key must be 32 characters long.';
+                return;
+            }
+
+            const encrypted = CryptoJS.AES.encrypt(message, key).toString();
+            document.getElementById('encrypted-message-result').value = encrypted;
+        }
+
+        function decryptMessage() {
+            const encryptedMessage = document.getElementById('encrypted-message-result').value;
+            const key = document.getElementById('key-input').value;
+
+            if (!encryptedMessage || !key) {
+                document.getElementById('decrypted-message-result').value = 'Message and key are required.';
+                return;
+            }
+
+            if (key.length !== 32) {
+                document.getElementById('decrypted-message-result').value = 'Key must be 32 characters long.';
+                return;
+            }
+
+            const decrypted = CryptoJS.AES.decrypt(encryptedMessage, key).toString(CryptoJS.enc.Utf8);
+            if (!decrypted) {
+                document.getElementById('decrypted-message-result').value = 'Invalid Encrypted Message or Key!';
+            } else {
+                document.getElementById('decrypted-message-result').value = decrypted;
+            }
+        }
+
+        window.showSection = showSection;
+        window.encodeText = encodeText;
+        window.decodeText = decodeText;
+        window.encodeImage = encodeImage;
+        window.decodeImage = decodeImage;
+        window.encodePDF = encodePDF;
+        window.decodePDF = decodePDF;
+        window.encodeXML = encodeXML;
+        window.decodeXML = decodeXML;
+        window.clearAllInputs = clearAllInputs;
+        window.encryptMessage = encryptMessage;
+        window.decryptMessage = decryptMessage;
+    </script>
+</body>
+</html>
