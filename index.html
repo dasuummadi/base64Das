@@ -142,23 +142,86 @@
 </head>
 <body>
     <div class="container">
-        <h1>Base64 Encoder/Decoder & AES Encryptor/Decryptor</h1>
+        <h1>Base64-XML-Encryption-Decryption-zip</h1>
 
         <select id="operation-selector" onchange="showSection()">
             <option value="">Select Operation</option>
-            <option value="text">Encode/Decode Text</option>
-            <option value="image">Encode/Decode Image</option>
-            <option value="pdf">Encode/Decode PDF</option>
-            <option value="xml">Encode/Decode XML</option>
-            <option value="message">Encrypt/Decrypt Message</option>
+            <option value="text">Base64-Encode-Decode</option>
+            <option value="image">Base64-Encode-Decode-Image</option>
+            <option value="pdf">Base64-Encode-Decode-PDF</option>
+            <option value="xml">XML-EncodeDecode</option>
+            <option value="message">Encrypt-Decrypt-Keys</option>
+           <option value="zip">Zip File Conversion</option>
+          <option value="unzip">Unzip  The File</option>
+         <option value="jwt">JWT Encoder/Decoder</option>
         </select>
 
         <div class="progress-bar-container">
             <div class="progress-bar" id="progress-bar"></div>
         </div>
 
+
+<!--<div id="jwt-section" class="section">
+    <h2>JWT Encoder/Decoder</h2>
+    <textarea id="credentials-input" rows="4" placeholder="Enter credentials in format: username|userid|userlicense|password"></textarea>
+    <input type="text" id="jwt-secret-input" placeholder="Enter secret key (optional)">
+    <button onclick="createJwt()">Create JWT</button>
+    <textarea class="result-textarea" id="jwt-result" placeholder="Generated JWT will appear here"></textarea>
+    <textarea class="result-textarea" id="jwt-decode-input" placeholder="Enter JWT to Decode"></textarea>
+    <button onclick="decodeJwt()">Decode JWT</button>
+    <div id="jwt-decode-result-container">
+        <h3>Result:</h3>
+        <div id="jwt-decode-result" class="result-textarea" style="display: flex; align-items: center;">
+            <button onclick="copyToClipboard()" style="border: none; background: none; cursor: pointer;">
+                <img src="https://cdn-icons-png.flaticon.com/512/60/60772.png" alt="Copy" style="width: 20px;">
+            </button>
+            <span id="jwt-decode-display" style="white-space: pre-wrap;"></span>
+        </div>
+    </div>
+    <div id="jwt-expiry" class="result-textarea"></div>
+</div>-->
+
+<div id="jwt-section" class="section">
+    <h2>JWT Encoder/Decoder</h2>
+    <textarea id="credentials-input" rows="4" placeholder="Enter credentials in format: username|userid|userlicense|password"></textarea>
+    <input type="text" id="jwt-secret-input" placeholder="Enter secret key (optional)">
+    <input type="number" id="jwt-expiry-input" placeholder="Enter expiry time in hours">
+    <button onclick="createJwt()">Create JWT</button>
+    <textarea class="result-textarea" id="jwt-result" placeholder="Generated JWT will appear here"></textarea>
+    <textarea class="result-textarea" id="jwt-decode-input" placeholder="Enter JWT to Decode"></textarea>
+    <button onclick="decodeJwt()">Decode JWT</button>
+    <div id="jwt-decode-result-container">
+        <h3>Result:</h3>
+        <div id="jwt-decode-result" class="result-textarea" style="display: flex; align-items: center;">
+            <button onclick="copyToClipboard()" style="border: none; background: none; cursor: pointer;">
+                <img src="https://cdn-icons-png.flaticon.com/512/60/60772.png" alt="Copy" style="width: 20px;">
+            </button>
+            <span id="jwt-decode-display" style="white-space: pre-wrap;"></span>
+        </div>
+    </div>
+    <div id="jwt-expiry" class="result-textarea"></div>
+</div>
+
+
+      <div id="zip-section" class="section">
+    <h2>Zip File Conversion</h2>
+     <input type="file" id="zip-input" multiple>
+    <button onclick="zipFiles()">Zip</button>
+    <textarea class="result-textarea" id="zip-result" placeholder="Base64 Zip file will appear here"></textarea>
+    <div class="download-link-container">
+        <a id="download-zip-link" class="download-link" style="display:none;" download="files.zip">Download Zipped File</a>
+    </div>
+</div>
+
+<div id="unzip-section" class="section">
+    <h2>Unzip  The File</h2>
+    <input type="file" id="unzip-input">
+    <button onclick="unzipFile()">Unzip</button>
+    <div id="unzipped-files-container"></div>
+</div>
+
         <div id="text-section" class="section">
-            <h2>Encode/Decode Text</h2>
+            <h2>Base64-Encode-Decode</h2>
             <textarea id="text-input" rows="4" placeholder="Enter text to encode"></textarea>
             <button onclick="encodeText()">Encode</button>
             <textarea class="result-textarea" id="encoded-text-result" placeholder="Encoded text will appear here"></textarea>
@@ -167,7 +230,7 @@
         </div>
 
         <div id="image-section" class="section">
-            <h2>Encode/Decode Image</h2>
+            <h2>Base64-Encode-Decode-Image</h2>
             <input type="file" id="image-input">
             <button onclick="encodeImage()">Encode</button>
             <textarea class="result-textarea" id="image-encoded-result" placeholder="Encoded image base64 will appear here"></textarea>
@@ -181,7 +244,7 @@
         </div>
 
         <div id="pdf-section" class="section">
-            <h2>Encode/Decode PDF</h2>
+            <h2>Base64-Encode-Decode-PDF</h2>
             <input type="file" id="pdf-input" accept=".pdf">
             <button onclick="encodePDF()">Encode</button>
             <textarea class="result-textarea" id="pdf-encoded-result" placeholder="Encoded PDF Base64 will appear here"></textarea>
@@ -193,7 +256,7 @@
         </div>
 
         <div id="xml-section" class="section">
-            <h2>Encode/Decode XML</h2>
+            <h2>XML-EncodeDecode</h2>
             <textarea id="xml-input" rows="4" placeholder="Enter XML content to encode"></textarea>
             <button onclick="encodeXML()">Encode</button>
             <textarea class="result-textarea" id="encoded-xml-result" placeholder="Encoded XML Base64 will appear here"></textarea>
@@ -203,7 +266,7 @@
         </div>
 
         <div id="message-section" class="section">
-            <h2>Encrypt/Decrypt Message</h2>
+            <h2>Encrypt-Decrypt-Keys</h2>
             <textarea id="message-input" rows="4" placeholder="Enter message to encrypt"></textarea>
             <input type="text" id="key-input" placeholder="Enter encryption key (32 characters)">
             <button onclick="encryptMessage()">Encrypt</button>
@@ -213,7 +276,11 @@
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
+    <script>
+     
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.6.0/jszip.min.js"></script>
     <script>
         function showSection() {
             const progressBar = document.getElementById('progress-bar');
@@ -226,6 +293,9 @@
             document.getElementById('pdf-section').style.display = 'none';
             document.getElementById('xml-section').style.display = 'none';
             document.getElementById('message-section').style.display = 'none';
+            document.getElementById('zip-section').style.display = 'none';
+            document.getElementById('unzip-section').style.display = 'none';
+            document.getElementById('jwt-section').style.display = 'none'; // Add JWT section
 
             clearAllInputs();
 
@@ -239,6 +309,12 @@
                 document.getElementById('xml-section').style.display = 'block';
             } else if (operation === 'message') {
                 document.getElementById('message-section').style.display = 'block';
+            } else if (operation === 'zip') {
+                document.getElementById('zip-section').style.display = 'block';
+            } else if (operation === 'unzip') {
+                document.getElementById('unzip-section').style.display = 'block';
+            } else if (operation === 'jwt') { // Add this block
+                document.getElementById('jwt-section').style.display = 'block';
             }
 
             setTimeout(() => {
@@ -246,7 +322,7 @@
             }, 1000);
         }
 
-        function clearAllInputs() {
+       function clearAllInputs() {
             document.getElementById('text-input').value = '';
             document.getElementById('encoded-text-result').value = '';
             document.getElementById('decoded-text-result').value = '';
@@ -270,7 +346,24 @@
             document.getElementById('key-input').value = '';
             document.getElementById('encrypted-message-result').value = '';
             document.getElementById('decrypted-message-result').value = '';
+
+            // Clear zip section inputs
+            document.getElementById('zip-input').value = '';
+            document.getElementById('zip-result').value = '';
+            document.getElementById('download-zip-link').style.display = 'none';
+
+            // Clear unzip section inputs
+            document.getElementById('unzip-input').value = '';
+            document.getElementById('unzipped-files-container').innerHTML = '';
+
+            document.getElementById('credentials-input').value = ''; // Clear JWT inputs
+            document.getElementById('jwt-secret-input').value = '';
+            document.getElementById('jwt-result').value = '';
+            document.getElementById('jwt-decode-input').value = '';
+            document.getElementById('jwt-decode-display').innerText = '';
+            document.getElementById('jwt-expiry').innerHTML = '';
         }
+
 
         function isValidBase64String(base64String) {
             const regex = /^([0-9a-zA-Z+/]{4})*(?:(?:[0-9a-zA-Z+/]{2}==)|(?:[0-9a-zA-Z+/]{3}=))?$/;
@@ -369,7 +462,7 @@
             }
         }
 
-        function encryptMessage() {
+      function encryptMessage() {
             const message = document.getElementById('message-input').value;
             const key = document.getElementById('key-input').value;
 
@@ -409,6 +502,218 @@
             }
         }
 
+
+
+/*function copyToClipboard() {
+    const resultText = document.getElementById('jwt-decode-display').innerText;
+    navigator.clipboard.writeText(resultText).then(() => {
+        alert('Copied to clipboard!');
+    }).catch(err => {
+        alert('Failed to copy: ' + err);
+    });
+}
+
+function createJwt() {
+    const credentials = document.getElementById('credentials-input').value;
+    const secret = document.getElementById('jwt-secret-input').value || 'defaultsecretkey';
+
+    const parts = credentials.split('|');
+    if (parts.length !== 4) {
+        document.getElementById('jwt-result').value = 'Credentials format is invalid';
+        return;
+    }
+
+    const [username, userId, userLicense, password] = parts;
+
+    const payloadObj = {
+        username: username,
+        userId: userId,
+        userLicense: userLicense,
+        password: password,
+        exp: Math.floor(Date.now() / 1000) + (60 * 60) // 1 hour expiration
+    };
+
+    try {
+        const header = {
+            alg: "HS256",
+            typ: "JWT"
+        };
+        const base64Header = btoa(JSON.stringify(header));
+        const base64Payload = btoa(JSON.stringify(payloadObj));
+        const signature = CryptoJS.HmacSHA256(base64Header + "." + base64Payload, secret);
+        const base64Signature = signature.toString(CryptoJS.enc.Base64);
+        const jwt = base64Header + "." + base64Payload + "." + base64Signature;
+        document.getElementById('jwt-result').value = jwt;
+    } catch (error) {
+        document.getElementById('jwt-result').value = "Error generating JWT";
+    }
+}
+
+function decodeJwt() {
+    const jwt = document.getElementById('jwt-decode-input').value;
+
+    if (!jwt) {
+        document.getElementById('jwt-decode-header').value = 'JWT is required';
+        document.getElementById('jwt-decode-payload').value = '';
+        document.getElementById('jwt-expiry').innerText = '';
+        return;
+    }
+
+    const parts = jwt.split('.');
+    if (parts.length !== 3) {
+        document.getElementById('jwt-decode-display').innerText = 'JWT format is invalid';
+        document.getElementById('jwt-expiry').innerText = '';
+        return;
+    }
+
+    try {
+        const header = JSON.parse(atob(parts[0]));
+        const payload = JSON.parse(atob(parts[1]));
+        const displayText = `Header: ${JSON.stringify(header, null, 2)}\nPayload: ${JSON.stringify(payload, null, 2)}`;
+
+        const resultDisplay = document.getElementById('jwt-decode-display');
+        resultDisplay.innerText = displayText;
+
+        const expiryTime = payload.exp ? new Date(payload.exp * 1000) : 'No expiry';
+        document.getElementById('jwt-expiry').innerHTML = `<strong>Expiry Time:</strong> ${expiryTime}`;
+    } catch (error) {
+        document.getElementById('jwt-decode-display').innerText = 'Error decoding JWT';
+        document.getElementById('jwt-expiry').innerText = '';
+    }
+}*/
+function copyToClipboard() {
+    const resultText = document.getElementById('jwt-decode-display').innerText;
+    navigator.clipboard.writeText(resultText).then(() => {
+        alert('Copied to clipboard!');
+    }).catch(err => {
+        alert('Failed to copy: ' + err);
+    });
+}
+
+function createJwt() {
+    const credentials = document.getElementById('credentials-input').value;
+    const secret = document.getElementById('jwt-secret-input').value || 'defaultsecretkey';
+    const expiryHoursInput = document.getElementById('jwt-expiry-input').value;
+
+    const parts = credentials.split('|');
+    if (parts.length !== 4) {
+        document.getElementById('jwt-result').value = 'Credentials format is invalid';
+        return;
+    }
+
+    const [username, userId, userLicense, password] = parts;
+
+    let expTime;
+    if (expiryHoursInput) {
+        const expiryInSeconds = parseInt(expiryHoursInput) * 3600;
+        expTime = Math.floor(Date.now() / 1000) + expiryInSeconds;
+    } else {
+        expTime = Math.floor(Date.now() / 1000) + (60 * 60); // Default 1 hour expiration
+    }
+
+    const payloadObj = {
+        username: username,
+        userId: userId,
+        userLicense: userLicense,
+        password: password,
+        exp: expTime
+    };
+
+    try {
+        const header = {
+            alg: "",
+            typ: ""
+        };
+        const base64Header = btoa(JSON.stringify(header));
+        const base64Payload = btoa(JSON.stringify(payloadObj));
+        const signature = CryptoJS.HmacSHA256(base64Header + "." + base64Payload, secret);
+        const base64Signature = signature.toString(CryptoJS.enc.Base64);
+        const jwt = base64Header + "." + base64Payload + "." + base64Signature;
+        document.getElementById('jwt-result').value = jwt;
+    } catch (error) {
+        document.getElementById('jwt-result').value = "Error generating JWT";
+    }
+}
+
+function decodeJwt() {
+    const jwt = document.getElementById('jwt-decode-input').value;
+
+    if (!jwt) {
+        document.getElementById('jwt-decode-display').innerText = 'JWT is required';
+        document.getElementById('jwt-expiry').innerText = '';
+        return;
+    }
+
+    const parts = jwt.split('.');
+    if (parts.length !== 3) {
+        document.getElementById('jwt-decode-display').innerText = 'JWT format is invalid';
+        document.getElementById('jwt-expiry').innerText = '';
+        return;
+    }
+
+    try {
+        const payload = JSON.parse(atob(parts[1]));
+
+        const displayText = `${payload.username}|${payload.userId}|${payload.userLicense}|${payload.password}`;
+
+        document.getElementById('jwt-decode-display').innerText = displayText;
+
+        const expiryTime = payload.exp ? new Date(payload.exp * 1000) : 'No expiry';
+        document.getElementById('jwt-expiry').innerHTML = `<strong>Expiry Time:</strong> ${expiryTime}`;
+    } catch (error) {
+        document.getElementById('jwt-decode-display').innerText = 'Error decoding JWT';
+        document.getElementById('jwt-expiry').innerText = '';
+    }
+}
+
+async function zipFiles() {
+    const files = document.getElementById('zip-input').files;
+    if (files.length === 0) {
+        alert('Please select files to zip');
+        return;
+    }
+
+    const zip = new JSZip();
+    for (const file of files) {
+        zip.file(file.name, file);
+    }
+
+    const base64zip = await zip.generateAsync({ type: "base64" });
+    document.getElementById('zip-result').value = base64zip;
+
+    const downloadLink = document.getElementById('download-zip-link');
+    downloadLink.href = "data:application/zip;base64," + base64zip;
+    downloadLink.style.display = 'inline-block';
+}
+
+async function unzipFile() {
+    const file = document.getElementById('unzip-input').files[0];
+    if (!file) {
+        alert('Please select a zip file');
+        return;
+    }
+
+    const unzippedFilesContainer = document.getElementById('unzipped-files-container');
+    unzippedFilesContainer.innerHTML = ''; // Clear previous results
+
+    const reader = new FileReader();
+    reader.onload = async function(event) {
+        const zip = new JSZip();
+        const contents = await zip.loadAsync(event.target.result);
+        for (const [filename, fileContent] of Object.entries(contents.files)) {
+            const fileBlob = await fileContent.async("blob");
+            const downloadLink = document.createElement('a');
+            downloadLink.href = URL.createObjectURL(fileBlob);
+            downloadLink.download = filename;
+            downloadLink.textContent = filename;
+            downloadLink.style.display = 'block';
+            unzippedFilesContainer.appendChild(downloadLink);
+        }
+    };
+    reader.readAsArrayBuffer(file);
+}
+
+
         window.showSection = showSection;
         window.encodeText = encodeText;
         window.decodeText = decodeText;
@@ -418,6 +723,11 @@
         window.decodePDF = decodePDF;
         window.encodeXML = encodeXML;
         window.decodeXML = decodeXML;
+         window.zipFiles = zipFiles;
+        window.unzipFile = unzipFile;
+      window.createJwt = createJwt;
+      window.decodeJwt = decodeJwt;
+      window.copyToClipboard = copyToClipboard;
         window.clearAllInputs = clearAllInputs;
         window.encryptMessage = encryptMessage;
         window.decryptMessage = decryptMessage;
