@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Base64 Encoder/Decoder & AES Encryptor/Decryptor</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?afamily=Poppins:300,400,500,600&display=swap">
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -23,7 +23,7 @@
 
         .container {
             width: 90%;
-            max-width: 900px;
+            max-width: 1300px;
             height: 90%;
             padding: 20px;
             background: #fff;
@@ -34,16 +34,22 @@
             overflow-y: auto;
         }
 
+        /* Remove .textarea-wrapper and .line-numbers styles */
         textarea, input[type="text"], input[type="file"], select {
             width: 100%;
             box-sizing: border-box;
             margin-bottom: 10px;
             padding: 12px;
             border: 1px solid #ccc;
-            border-radius: 8px; /* Increased rounded corners for inputs */
+            border-radius: 8px;
             font-size: 16px;
             font-family: 'Poppins', sans-serif;
             background-color: #f9f9f9;
+            resize: vertical; /* allow vertical resizing */
+            min-height: 40px;
+            max-height: 600px;
+            overflow-y: auto;
+            transition: height 0.2s;
         }
 
         button {
@@ -94,8 +100,10 @@
         .progress-bar {
             width: 0;
             height: 20px;
-            background: linear-gradient(to right, #87cefa, #1e90ff);
-            transition: width 0.4s ease;
+            /* Updated gradient for more beautiful color */
+            background: linear-gradient(90deg, #ffecd2 0%, #fcb69f 25%, #a1c4fd 50%, #c2e9fb 75%, #667eea 100%);
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.15);
         }
 
         .error-message {
@@ -131,6 +139,32 @@
             color: #4682b4;
         }
 
+        /* Remove .textarea-wrapper and .line-numbers CSS */
+        .textarea-wrapper {
+            display: flex;
+            align-items: stretch;
+            width: 100%;
+            position: relative;
+        }
+        .line-numbers {
+            background: #f7fafc;
+            color: #aaa;
+            font-family: monospace;
+            font-size: 15px;
+            text-align: right;
+            padding: 12px 6px 12px 0;
+            border-right: 1px solid #ccc;
+            user-select: none;
+            min-width: 32px;
+            max-width: 40px;
+            overflow: hidden;
+        }
+        .textarea-wrapper textarea {
+            border-left: none;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 0;
+        }
+
         @media (max-height: 600px) {
             .container {
                 height: auto;
@@ -151,9 +185,12 @@
             <option value="pdf">Base64-Encode-Decode-PDF</option>
             <option value="xml">XML-EncodeDecode</option>
             <option value="message">Encrypt-Decrypt-Keys</option>
-           <option value="zip">Zip-File </option>
-          <option value="unzip">Unzip-File</option>
-         <option value="jwt">Genrate-JWT</option>
+            <option value="zip">Zip-File </option>
+            <option value="unzip">Unzip-File</option>
+            <option value="jwt">Genrate-JWT</option>
+            <option value="json2str">JSON to String Converter</option>
+            <option value="str2json">String to JSON Converter</option>
+            <option value="jsonbeautify">JSON Beautifier</option>
         </select>
 
         <div class="progress-bar-container">
@@ -161,25 +198,7 @@
         </div>
 
 
-<!--<div id="jwt-section" class="section">
-    <h2>JWT Encoder/Decoder</h2>
-    <textarea id="credentials-input" rows="4" placeholder="Enter credentials in format: username|userid|userlicense|password"></textarea>
-    <input type="text" id="jwt-secret-input" placeholder="Enter secret key (optional)">
-    <button onclick="createJwt()">Create JWT</button>
-    <textarea class="result-textarea" id="jwt-result" placeholder="Generated JWT will appear here"></textarea>
-    <textarea class="result-textarea" id="jwt-decode-input" placeholder="Enter JWT to Decode"></textarea>
-    <button onclick="decodeJwt()">Decode JWT</button>
-    <div id="jwt-decode-result-container">
-        <h3>Result:</h3>
-        <div id="jwt-decode-result" class="result-textarea" style="display: flex; align-items: center;">
-            <button onclick="copyToClipboard()" style="border: none; background: none; cursor: pointer;">
-                <img src="https://cdn-icons-png.flaticon.com/512/60/60772.png" alt="Copy" style="width: 20px;">
-            </button>
-            <span id="jwt-decode-display" style="white-space: pre-wrap;"></span>
-        </div>
-    </div>
-    <div id="jwt-expiry" class="result-textarea"></div>
-</div>-->
+
 
 <div id="jwt-section" class="section">
     <h2>JWT Encoder/Decoder</h2>
@@ -205,7 +224,7 @@
 
       <div id="zip-section" class="section">
     <h2>Zip File Conversion</h2>
-     <input type="file" id="zip-input" multiple>
+    <input type="file" id="zip-input" multiple>
     <button onclick="zipFiles()">Zip</button>
     <textarea class="result-textarea" id="zip-result" placeholder="Base64 Zip file will appear here"></textarea>
     <div class="download-link-container">
@@ -239,6 +258,10 @@
                 <canvas id="canvas"></canvas>
                 <img id="image-result" src="#" alt="Decoded Image" style="display:none;">
                 <a id="download-link" class="download-link" download="decoded-image.jpg">Download Decoded Image</a>
+                <!-- Progress bar for image download -->
+                <div id="image-download-progress-container" class="progress-bar-container" style="display:none;">
+                    <div id="image-download-progress-bar" class="progress-bar"></div>
+                </div>
                 <div id="image-error" class="error-message" style="display:none;">Invalid Base64 string for image.</div>
             </div>
         </div>
@@ -252,6 +275,10 @@
             <button onclick="decodePDF()">Decode</button>
             <div class="pdf-download-container">
                 <a id="pdf-result" class="download-link" style="display:none;" download="decoded.pdf">Download Decoded PDF</a>
+                <!-- Progress bar for PDF download -->
+                <div id="pdf-download-progress-container" class="progress-bar-container" style="display:none;">
+                    <div id="pdf-download-progress-bar" class="progress-bar"></div>
+                </div>
             </div>
         </div>
 
@@ -274,10 +301,52 @@
             <button onclick="decryptMessage()">Decrypt</button>
             <textarea class="result-textarea" id="decrypted-message-result" placeholder="Decrypted message will appear here"></textarea>
         </div>
+
+        <div id="json2str-section" class="section">
+            <h2>JSON to String Converter</h2>
+            <textarea id="json2str-input" rows="4" placeholder="Enter JSON here"></textarea>
+            <button onclick="jsonToString()">Convert to String</button>
+            <textarea class="result-textarea" id="json2str-result" placeholder="String result will appear here"></textarea>
+        </div>
+
+        <div id="str2json-section" class="section">
+            <h2>String to JSON Converter</h2>
+            <textarea id="str2json-input" rows="4" placeholder="Enter String here"></textarea>
+            <button onclick="stringToJson()">Convert to JSON</button>
+            <textarea class="result-textarea" id="str2json-result" placeholder="JSON result will appear here"></textarea>
+        </div>
+
+        <!-- JSON Beautifier section UI with collapsible JSON viewer and line numbers -->
+        <div id="jsonbeautify-section" class="section">
+            <h2>JSON Beautifier</h2>
+            <div style="display: flex; gap: 16px; justify-content: center; align-items: flex-start;">
+                <div style="flex:1; min-width: 0;">
+                    <label for="jsonbeautify-input" style="font-weight:600; display:block; margin-bottom:4px;">Input JSON</label>
+                    <div style="position:relative; width:100%;">
+                        <textarea id="jsonbeautify-input" rows="16" style="width:100%; min-width:200px; resize:vertical; font-family:monospace; font-size:15px; padding-left:40px; box-sizing:border-box;" placeholder="Paste minified or ugly JSON here"></textarea>
+                        <div id="jsonbeautify-input-lines"
+                            style="position:absolute;top:0;left:0;bottom:0;width:32px;overflow:hidden;
+                            background:#f7fafc;border-right:1px solid #ccc;text-align:right;user-select:none;
+                            color:#aaa;font-family:monospace;font-size:15px;line-height:1.5;padding:12px 4px 12px 0;pointer-events:none;">
+                        </div>
+                    </div>
+                </div>
+                <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; margin-top:32px;">
+                    <button onclick="beautifyJson()" title="Beautify" style="padding: 8px 18px; font-size:18px; border-radius:50%; background:#e2e8f0; color:#333; border:1px solid #bfc9d1; box-shadow:0 2px 6px rgba(0,0,0,0.07); margin-bottom:8px; cursor:pointer;">
+                        <span style="font-size:20px;">&#8594;</span>
+                    </button>
+                </div>
+                <div style="flex:1; min-width: 0;">
+                    <label for="jsonbeautify-output" style="font-weight:600; display:block; margin-bottom:4px;">Beautified JSON</label>
+                    <div style="display:flex;">
+                        <div id="json-line-numbers" style="background:#f7fafc;border-right:1px solid #ccc;padding:8px 4px 8px 0;text-align:right;user-select:none;color:#aaa;font-family:monospace;font-size:15px;min-width:32px;"></div>
+                        <div id="json-collapsible-viewer" style="width:100%; min-width:200px; background:#f7fafc; border-radius:8px; border:1px solid #ccc; border-left:none; padding:8px; font-family:monospace; font-size:15px; text-align:left; min-height:350px; max-height:500px; overflow:auto;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
-    <script>
      
  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.6.0/jszip.min.js"></script>
@@ -295,7 +364,10 @@
             document.getElementById('message-section').style.display = 'none';
             document.getElementById('zip-section').style.display = 'none';
             document.getElementById('unzip-section').style.display = 'none';
-            document.getElementById('jwt-section').style.display = 'none'; // Add JWT section
+            document.getElementById('jwt-section').style.display = 'none';
+            document.getElementById('json2str-section').style.display = 'none';
+            document.getElementById('str2json-section').style.display = 'none';
+            document.getElementById('jsonbeautify-section').style.display = 'none'; // add this
 
             clearAllInputs();
 
@@ -313,8 +385,14 @@
                 document.getElementById('zip-section').style.display = 'block';
             } else if (operation === 'unzip') {
                 document.getElementById('unzip-section').style.display = 'block';
-            } else if (operation === 'jwt') { // Add this block
+            } else if (operation === 'jwt') {
                 document.getElementById('jwt-section').style.display = 'block';
+            } else if (operation === 'json2str') {
+                document.getElementById('json2str-section').style.display = 'block';
+            } else if (operation === 'str2json') {
+                document.getElementById('str2json-section').style.display = 'block';
+            } else if (operation === 'jsonbeautify') {
+                document.getElementById('jsonbeautify-section').style.display = 'block';
             }
 
             setTimeout(() => {
@@ -322,7 +400,7 @@
             }, 1000);
         }
 
-       function clearAllInputs() {
+        function clearAllInputs() {
             document.getElementById('text-input').value = '';
             document.getElementById('encoded-text-result').value = '';
             document.getElementById('decoded-text-result').value = '';
@@ -362,6 +440,19 @@
             document.getElementById('jwt-decode-input').value = '';
             document.getElementById('jwt-decode-display').innerText = '';
             document.getElementById('jwt-expiry').innerHTML = '';
+
+            // Clear JSON to String Converter inputs
+            document.getElementById('json2str-input').value = '';
+            document.getElementById('json2str-result').value = '';
+
+            // Clear String to JSON Converter inputs
+            document.getElementById('str2json-input').value = '';
+            document.getElementById('str2json-result').value = '';
+
+            document.getElementById('jsonbeautify-input') && (document.getElementById('jsonbeautify-input').value = '');
+            // Clear the JSON Beautifier viewer and line numbers as well
+            document.getElementById('json-collapsible-viewer') && (document.getElementById('json-collapsible-viewer').innerHTML = '');
+            document.getElementById('json-line-numbers') && (document.getElementById('json-line-numbers').innerHTML = '');
         }
 
 
@@ -504,83 +595,7 @@
 
 
 
-/*function copyToClipboard() {
-    const resultText = document.getElementById('jwt-decode-display').innerText;
-    navigator.clipboard.writeText(resultText).then(() => {
-        alert('Copied to clipboard!');
-    }).catch(err => {
-        alert('Failed to copy: ' + err);
-    });
-}
 
-function createJwt() {
-    const credentials = document.getElementById('credentials-input').value;
-    const secret = document.getElementById('jwt-secret-input').value || 'defaultsecretkey';
-
-    const parts = credentials.split('|');
-    if (parts.length !== 4) {
-        document.getElementById('jwt-result').value = 'Credentials format is invalid';
-        return;
-    }
-
-    const [username, userId, userLicense, password] = parts;
-
-    const payloadObj = {
-        username: username,
-        userId: userId,
-        userLicense: userLicense,
-        password: password,
-        exp: Math.floor(Date.now() / 1000) + (60 * 60) // 1 hour expiration
-    };
-
-    try {
-        const header = {
-            alg: "HS256",
-            typ: "JWT"
-        };
-        const base64Header = btoa(JSON.stringify(header));
-        const base64Payload = btoa(JSON.stringify(payloadObj));
-        const signature = CryptoJS.HmacSHA256(base64Header + "." + base64Payload, secret);
-        const base64Signature = signature.toString(CryptoJS.enc.Base64);
-        const jwt = base64Header + "." + base64Payload + "." + base64Signature;
-        document.getElementById('jwt-result').value = jwt;
-    } catch (error) {
-        document.getElementById('jwt-result').value = "Error generating JWT";
-    }
-}
-
-function decodeJwt() {
-    const jwt = document.getElementById('jwt-decode-input').value;
-
-    if (!jwt) {
-        document.getElementById('jwt-decode-header').value = 'JWT is required';
-        document.getElementById('jwt-decode-payload').value = '';
-        document.getElementById('jwt-expiry').innerText = '';
-        return;
-    }
-
-    const parts = jwt.split('.');
-    if (parts.length !== 3) {
-        document.getElementById('jwt-decode-display').innerText = 'JWT format is invalid';
-        document.getElementById('jwt-expiry').innerText = '';
-        return;
-    }
-
-    try {
-        const header = JSON.parse(atob(parts[0]));
-        const payload = JSON.parse(atob(parts[1]));
-        const displayText = `Header: ${JSON.stringify(header, null, 2)}\nPayload: ${JSON.stringify(payload, null, 2)}`;
-
-        const resultDisplay = document.getElementById('jwt-decode-display');
-        resultDisplay.innerText = displayText;
-
-        const expiryTime = payload.exp ? new Date(payload.exp * 1000) : 'No expiry';
-        document.getElementById('jwt-expiry').innerHTML = `<strong>Expiry Time:</strong> ${expiryTime}`;
-    } catch (error) {
-        document.getElementById('jwt-decode-display').innerText = 'Error decoding JWT';
-        document.getElementById('jwt-expiry').innerText = '';
-    }
-}*/
 function copyToClipboard() {
     const resultText = document.getElementById('jwt-decode-display').innerText;
     navigator.clipboard.writeText(resultText).then(() => {
@@ -591,48 +606,54 @@ function copyToClipboard() {
 }
 
 function createJwt() {
+    // Simulate C# Encrypt(username) with base64 (replace with real encryption if needed)
     const credentials = document.getElementById('credentials-input').value;
-    const secret = document.getElementById('jwt-secret-input').value || 'defaultsecretkey';
-    const expiryHoursInput = document.getElementById('jwt-expiry-input').value;
-
-    const parts = credentials.split('|');
-    if (parts.length !== 4) {
-        document.getElementById('jwt-result').value = 'Credentials format is invalid';
+    const validity = parseInt(document.getElementById('jwt-expiry-input').value) || 60; // minutes
+    const secret = "ERMN05OPLoDvbTTa/QkqLNMI7cPLguaRyHzyg7n5qNBVjQmtBhz4SzYh4NBVCXi3KJHlSXKP+oi2+bXr6CUYTR==";
+    if (!credentials) {
+        document.getElementById('jwt-result').value = 'Username is required';
         return;
     }
+    // Encrypt username (simulate)
+    const encryptedUsername = btoa(credentials);
 
-    const [username, userId, userLicense, password] = parts;
-
-    let expTime;
-    if (expiryHoursInput) {
-        const expiryInSeconds = parseInt(expiryHoursInput) * 3600;
-        expTime = Math.floor(Date.now() / 1000) + expiryInSeconds;
-    } else {
-        expTime = Math.floor(Date.now() / 1000) + (60 * 60); // Default 1 hour expiration
-    }
-
-    const payloadObj = {
-        username: username,
-        userId: userId,
-        userLicense: userLicense,
-        password: password,
-        exp: expTime
+    // JWT header
+    const header = {
+        alg: "HS256",
+        typ: "JWT"
+    };
+    // JWT payload
+    const payload = {
+        name: encryptedUsername,
+        exp: Math.floor(Date.now() / 1000) + validity * 60
     };
 
-    try {
-        const header = {
-            alg: "",
-            typ: ""
-        };
-        const base64Header = btoa(JSON.stringify(header));
-        const base64Payload = btoa(JSON.stringify(payloadObj));
-        const signature = CryptoJS.HmacSHA256(base64Header + "." + base64Payload, secret);
-        const base64Signature = signature.toString(CryptoJS.enc.Base64);
-        const jwt = base64Header + "." + base64Payload + "." + base64Signature;
-        document.getElementById('jwt-result').value = jwt;
-    } catch (error) {
-        document.getElementById('jwt-result').value = "Error generating JWT";
+    // Base64Url encode
+    function base64UrlEncode(obj) {
+        return btoa(JSON.stringify(obj))
+            .replace(/=/g, '')
+            .replace(/\+/g, '-')
+            .replace(/\//g, '_');
     }
+
+    const encodedHeader = base64UrlEncode(header);
+    const encodedPayload = base64UrlEncode(payload);
+    const data = encodedHeader + "." + encodedPayload;
+
+    // HMACSHA256 signature
+    function base64UrlFromWordArray(wordArray) {
+        return CryptoJS.enc.Base64.stringify(wordArray)
+            .replace(/=/g, '')
+            .replace(/\+/g, '-')
+            .replace(/\//g, '_');
+    }
+    // Convert base64 secret to WordArray
+    const key = CryptoJS.enc.Base64.parse(secret);
+    const signature = CryptoJS.HmacSHA256(data, key);
+    const encodedSignature = base64UrlFromWordArray(signature);
+
+    const jwt = data + "." + encodedSignature;
+    document.getElementById('jwt-result').value = jwt;
 }
 
 function decodeJwt() {
@@ -654,7 +675,13 @@ function decodeJwt() {
     try {
         const payload = JSON.parse(atob(parts[1]));
 
-        const displayText = `${payload.username}|${payload.userId}|${payload.userLicense}|${payload.password}`;
+        // Decode the username if present
+        let username = payload.name ? atob(payload.name) : '';
+        let userId = payload.userId || '';
+        let userLicense = payload.userLicense || '';
+        let password = payload.password || '';
+
+        const displayText = `${username}|${userId}|${userLicense}|${password}`;
 
         document.getElementById('jwt-decode-display').innerText = displayText;
 
@@ -731,6 +758,291 @@ async function unzipFile() {
         window.clearAllInputs = clearAllInputs;
         window.encryptMessage = encryptMessage;
         window.decryptMessage = decryptMessage;
+        window.jsonToString = jsonToString;
+        window.stringToJson = stringToJson;
+        window.beautifyJson = beautifyJson;
+
+    // Add download progress bar logic for image
+    document.getElementById('download-link').addEventListener('click', function(e) {
+        showBeautifulProgressBar('image-download-progress-container', 'image-download-progress-bar');
+    });
+
+    // Add download progress bar logic for PDF
+    document.getElementById('pdf-result').addEventListener('click', function(e) {
+        showBeautifulProgressBar('pdf-download-progress-container', 'pdf-download-progress-bar');
+    });
+
+    // Helper for beautiful progress bar animation
+    function showBeautifulProgressBar(containerId, barId) {
+        const progressContainer = document.getElementById(containerId);
+        const progressBar = document.getElementById(barId);
+        progressContainer.style.display = 'block';
+        progressBar.style.width = '0';
+        // Optionally, randomize the gradient direction for more beauty
+        progressBar.style.background = 'linear-gradient(90deg, #ffecd2 0%, #fcb69f 25%, #a1c4fd 50%, #c2e9fb 75%, #667eea 100%)';
+        setTimeout(() => { progressBar.style.width = '100%'; }, 50);
+        setTimeout(() => { progressContainer.style.display = 'none'; }, 1000);
+    }
+
+    // JSON to String Converter
+    function jsonToString() {
+        let input = document.getElementById('json2str-input').value.trim();
+        let resultArea = document.getElementById('json2str-result');
+        try {
+            // If input doesn't start with {, try to wrap it
+            if (!input.startsWith('{') && !input.startsWith('[')) {
+                input = '{' + input + '}';
+            }
+            const obj = JSON.parse(input);
+            resultArea.value = JSON.stringify(obj);
+        } catch (e) {
+            resultArea.value = 'Invalid JSON input.';
+        }
+    }
+
+    // String to JSON Converter
+    function stringToJson() {
+        let input = document.getElementById('str2json-input').value.trim();
+        let resultArea = document.getElementById('str2json-result');
+        try {
+            // Try to parse as JSON
+            const obj = JSON.parse(input);
+            resultArea.value = JSON.stringify(obj, null, 2);
+        } catch (e) {
+            resultArea.value = 'Invalid string for JSON parsing.';
+        }
+    }
+
+    // Generate a random Auth Key (not like JWT, just a secure random string)
+    function generateAuthKey(length = 64) {
+        const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+[]{}|;:,.<>?';
+        let result = '';
+        const array = new Uint32Array(length);
+        window.crypto.getRandomValues(array);
+        for (let i = 0; i < length; i++) {
+            result += charset[array[i] % charset.length];
+        }
+        return result;
+    }
+
+    // Generate Auth Key using C#-like JWT logic with all parameters
+    function generateAuthKeyJS(credentials, validityMinutes) {
+        // credentials: "help@syntizen.com|106|JUPUB-MNYOI-GQEEZ-NGSYD|SYNDEV"
+        const secret = "ERMN05OPLoDvbTTa/QkqLNMI7cPLguaRyHzyg7n5qNBVjQmtBhz4SzYh4NBVCXi3KJHlSXKP+oi2+bXr6CUYTR==";
+        const key = CryptoJS.enc.Base64.parse(secret);
+
+        // Simulate Utilities.Encrypt(username) with base64 (replace with real encryption if needed)
+        const parts = credentials.split('|');
+        if (parts.length !== 4) return '';
+
+        const username = btoa(parts[0]); // simulate encrypt
+        const userId = parts[1];
+        const userLicense = parts[2];
+        const password = parts[3];
+
+        // JWT header
+        const header = {
+            alg: "HS256",
+            typ: "JWT"
+        };
+
+        // JWT payload (mimic C# ClaimsIdentity)
+        const now = Math.floor(Date.now() / 1000);
+        const payload = {
+            name: username,
+            userId: userId,
+            userLicense: userLicense,
+            password: password,
+            nbf: now, // Not Before
+            iat: now, // Issued At
+            exp: now + (validityMinutes * 60) // Expiry
+        };
+
+        // Base64Url encode
+        function base64UrlEncode(obj) {
+            return btoa(JSON.stringify(obj))
+                .replace(/=/g, '')
+                .replace(/\+/g, '-')
+                .replace(/\//g, '_');
+        }
+
+        const encodedHeader = base64UrlEncode(header);
+        const encodedPayload = base64UrlEncode(payload);
+        const data = encodedHeader + "." + encodedPayload;
+
+        // HMACSHA256 signature
+        function base64UrlFromWordArray(wordArray) {
+            return CryptoJS.enc.Base64.stringify(wordArray)
+                .replace(/=/g, '')
+                .replace(/\+/g, '-')
+                .replace(/\//g, '_');
+        }
+        const signature = CryptoJS.HmacSHA256(data, key);
+        const encodedSignature = base64UrlFromWordArray(signature);
+
+        return data + "." + encodedSignature;
+    }
+
+    // Example usage:
+    // let authKey = generateAuthKeyJS("help@syntizen.com|106|JUPUB-MNYOI-GQEEZ-NGSYD|SYNDEV", 60);
+    // alert(authKey);
+
+    // JSON Beautifier function with collapsible viewer and line numbers
+    function beautifyJson() {
+        const input = document.getElementById('jsonbeautify-input').value;
+        const viewer = document.getElementById('json-collapsible-viewer');
+        const lineNumbers = document.getElementById('json-line-numbers');
+        try {
+            const obj = JSON.parse(input);
+            // Render with all nodes open by default
+            viewer.innerHTML = renderCollapsibleJson(obj, 0, true);
+            // Add line numbers
+            setTimeout(() => {
+                const lines = viewer.innerText.split('\n').length;
+                let nums = '';
+                for (let i = 1; i <= lines; i++) nums += i + '<br>';
+                lineNumbers.innerHTML = nums;
+            }, 0);
+        } catch (e) {
+            viewer.innerHTML = '<span style="color:red;">Invalid JSON input.</span>';
+            lineNumbers.innerHTML = '';
+        }
+    }
+
+    // Helper to render collapsible JSON, openAll = true to open all nodes initially
+    function renderCollapsibleJson(obj, level = 0, openAll = false) {
+        if (typeof obj !== 'object' || obj === null) {
+            return `<span style="color:#0b6;">${JSON.stringify(obj)}</span>`;
+        }
+        const isArray = Array.isArray(obj);
+        const keys = isArray ? obj : Object.keys(obj);
+        if (keys.length === 0) {
+            return isArray ? '[ ]' : '{ }';
+        }
+        const id = 'json-collapsible-' + Math.random().toString(36).substr(2, 9);
+        let html = `<div style="margin-left:${level * 18}px;">`;
+        html += `<span class="json-toggle" data-target="${id}" style="cursor:pointer;user-select:none;">${openAll ? '&#9660;' : '&#9654;'}</span> `;
+        html += isArray
+            ? `[<span id="${id}" style="display:${openAll ? '' : 'none'};">`
+            : `{<span id="${id}" style="display:${openAll ? '' : 'none'};">`;
+        html += '<br>';
+        let idx = 0;
+        for (let k in obj) {
+            if (isArray) {
+                html += renderCollapsibleJson(obj[k], level + 1, openAll);
+            } else {
+                html += `<span style="margin-left:${(level + 1) * 18}px;color:#b35;">"${k}"</span>: `;
+                html += renderCollapsibleJson(obj[k], level + 1, openAll);
+            }
+            if (++idx < keys.length) html += ',<br>';
+            else html += '<br>';
+        }
+        html += isArray ? ']' : '}';
+        html += '</span></div>';
+        return html;
+    }
+
+    // Toggle open/close for JSON objects/arrays and update line numbers
+    document.addEventListener('click', function (e) {
+        if (e.target.classList.contains('json-toggle')) {
+            const targetId = e.target.getAttribute('data-target');
+            const el = document.getElementById(targetId);
+            if (el) {
+                // Toggle open/close
+                const isOpening = el.style.display === 'none';
+                el.style.display = isOpening ? '' : 'none';
+                e.target.innerHTML = isOpening ? '&#9660;' : '&#9654;'; // down or right arrow
+
+                // Optionally, auto-close all child nodes when closing a parent
+                if (!isOpening) {
+                    // Find all descendant .json-toggle elements and close them
+                    const descendants = el.querySelectorAll('.json-toggle');
+                    descendants.forEach(function(toggle) {
+                        const childId = toggle.getAttribute('data-target');
+                        const childEl = document.getElementById(childId);
+                        if (childEl && childEl.style.display !== 'none') {
+                            childEl.style.display = 'none';
+                            toggle.innerHTML = '&#9654;'; // right arrow
+                        }
+                    });
+                }
+
+                // Update line numbers after toggle
+                setTimeout(() => {
+                    const viewer = document.getElementById('json-collapsible-viewer');
+                    const lineNumbers = document.getElementById('json-line-numbers');
+                    const lines = viewer.innerText.split('\n').length;
+                    let nums = '';
+                    for (let i = 1; i <= lines; i++) nums += i + '<br>';
+                    lineNumbers.innerHTML = nums;
+                }, 0);
+
+                // Dynamically increase textarea height if open
+                setTimeout(() => {
+                    const ta = document.getElementById('jsonbeautify-input');
+                    if (ta) autoResizeTextarea(ta);
+                }, 10);
+            }
+        }
+    });
+
+    // Dynamically auto-resize all textareas in all operations
+    function autoResizeTextarea(el) {
+        el.style.height = 'auto';
+        el.style.height = (el.scrollHeight + 2) + 'px';
+    }
+
+    function attachAutoResizeToAllTextareas() {
+        const textareas = document.querySelectorAll('textarea');
+        textareas.forEach(function (ta) {
+            ta.addEventListener('input', function () {
+                autoResizeTextarea(ta);
+            });
+            // Initial resize for pre-filled content
+            autoResizeTextarea(ta);
+        });
+    }
+
+    // Update line numbers inside the textarea for JSON Beautifier input
+    function updateJsonBeautifierInputLines() {
+        const ta = document.getElementById('jsonbeautify-input');
+        const linesDiv = document.getElementById('jsonbeautify-input-lines');
+        if (!ta || !linesDiv) return;
+        const lines = ta.value.split('\n').length || 1;
+        let nums = '';
+        for (let i = 1; i <= lines; i++) nums += i + '\n';
+        linesDiv.textContent = nums;
+        // Sync scroll
+        linesDiv.scrollTop = ta.scrollTop;
+        // Match height
+        linesDiv.style.height = ta.offsetHeight + 'px';
+    }
+    function attachJsonBeautifierInputLineNumbers() {
+        const ta = document.getElementById('jsonbeautify-input');
+        const linesDiv = document.getElementById('jsonbeautify-input-lines');
+        if (!ta || !linesDiv) return;
+        updateJsonBeautifierInputLines();
+        ta.addEventListener('input', updateJsonBeautifierInputLines);
+        ta.addEventListener('scroll', () => { linesDiv.scrollTop = ta.scrollTop; });
+        ta.addEventListener('keyup', updateJsonBeautifierInputLines);
+        // Also update on resize
+        new ResizeObserver(updateJsonBeautifierInputLines).observe(ta);
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        attachAutoResizeToAllTextareas();
+        attachJsonBeautifierInputLineNumbers();
+    });
+
+    const _origShowSection = showSection;
+    showSection = function () {
+        _origShowSection();
+        setTimeout(() => {
+            attachAutoResizeToAllTextareas();
+            attachJsonBeautifierInputLineNumbers();
+        }, 50);
+    };
     </script>
 </body>
+
 </html>
