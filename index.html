@@ -187,7 +187,7 @@
             <option value="message">Encrypt-Decrypt-Keys</option>
             <option value="zip">Zip-File </option>
             <option value="unzip">Unzip-File</option>
-            <option value="jwt">Genrate-JWT</option>
+            
             <option value="json2str">JSON to String Converter</option>
             <option value="str2json">String to JSON Converter</option>
             <option value="jsonbeautify">JSON Beautifier</option>
@@ -606,7 +606,7 @@ function copyToClipboard() {
 }
 
 function createJwt() {
-    // Simulate C# Encrypt(username) with base64 (replace with real encryption if needed)
+    
     const credentials = document.getElementById('credentials-input').value;
     const validity = parseInt(document.getElementById('jwt-expiry-input').value) || 60; // minutes
     const secret = "";
@@ -1045,4 +1045,5 @@ async function unzipFile() {
 </body>
 
 </html>
+
 
