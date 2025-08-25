@@ -609,7 +609,7 @@ function createJwt() {
     // Simulate C# Encrypt(username) with base64 (replace with real encryption if needed)
     const credentials = document.getElementById('credentials-input').value;
     const validity = parseInt(document.getElementById('jwt-expiry-input').value) || 60; // minutes
-    const secret = "ERMN05OPLoDvbTTa/QkqLNMI7cPLguaRyHzyg7n5qNBVjQmtBhz4SzYh4NBVCXi3KJHlSXKP+oi2+bXr6CUYTR==";
+    const secret = "";
     if (!credentials) {
         document.getElementById('jwt-result').value = 'Username is required';
         return;
@@ -827,7 +827,7 @@ async function unzipFile() {
 
     // Generate Auth Key using C#-like JWT logic with all parameters
     function generateAuthKeyJS(credentials, validityMinutes) {
-        // credentials: "help@syntizen.com|106|JUPUB-MNYOI-GQEEZ-NGSYD|SYNDEV"
+        // credentials: ""
         const secret = "ERMN05OPLoDvbTTa/QkqLNMI7cPLguaRyHzyg7n5qNBVjQmtBhz4SzYh4NBVCXi3KJHlSXKP+oi2+bXr6CUYTR==";
         const key = CryptoJS.enc.Base64.parse(secret);
 
@@ -884,8 +884,7 @@ async function unzipFile() {
     }
 
     // Example usage:
-    // let authKey = generateAuthKeyJS("help@syntizen.com|106|JUPUB-MNYOI-GQEEZ-NGSYD|SYNDEV", 60);
-    // alert(authKey);
+    sss
 
     // JSON Beautifier function with collapsible viewer and line numbers
     function beautifyJson() {
@@ -1046,3 +1045,4 @@ async function unzipFile() {
 </body>
 
 </html>
+
