@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Base64 Encoder/Decoder & AES Encryptor/Decryptor</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?afamily=Poppins:300,400,500,600&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600&display=swap">
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -75,7 +75,8 @@
             font-size: 28px;
             font-weight: 700;
             margin-bottom: 20px;
-            color: #333;
+            color: #005f73; /* Changed title color */
+            letter-spacing: 1px;
         }
 
         h2 {
@@ -165,12 +166,42 @@
             margin-bottom: 0;
         }
 
+        /* Section heading colors */
+        #text-section h2 { color: #0077b6; }
+        #image-section h2 { color: #8d5fd3; }
+        #pdf-section h2 { color: #e76f51; }
+        #xml-section h2 { color: #2a9d8f; }
+        #message-section h2 { color: #e9c46a; }
+        #zip-section h2 { color: #264653; }
+        #unzip-section h2 { color: #f94144; }
+        #jwt-section h2 { color: #43aa8b; }
+        #json2str-section h2 { color: #f3722c; }
+        #str2json-section h2 { color: #277da1; }
+        #jsonbeautify-section h2 { color: #b5179e; }
+
         @media (max-height: 600px) {
             .container {
                 height: auto;
                 overflow-y: auto;
                 padding-bottom: 20px;
             }
+        }
+
+        select#operation-selector {
+            /* ...existing code... */
+            max-width: 100%;
+            /* Add these lines for dropdown scroll */
+            max-height: 60px;
+            overflow-y: auto;
+        }
+        /* For Chrome, Safari, Edge */
+        select#operation-selector:focus option {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        /* For Firefox */
+        select#operation-selector option {
+            max-height: 200px;
         }
     </style>
 </head>
@@ -187,7 +218,7 @@
             <option value="message">Encrypt-Decrypt-Keys</option>
             <option value="zip">Zip-File </option>
             <option value="unzip">Unzip-File</option>
-            
+            <option value="jwt">Genrate-JWT</option>
             <option value="json2str">JSON to String Converter</option>
             <option value="str2json">String to JSON Converter</option>
             <option value="jsonbeautify">JSON Beautifier</option>
@@ -250,7 +281,7 @@
 
         <div id="image-section" class="section">
             <h2>Base64-Encode-Decode-Image</h2>
-            <input type="file" id="image-input">
+            <input type="file" id="image-input" accept="image/*,.tiff,.tif">
             <button onclick="encodeImage()">Encode</button>
             <textarea class="result-textarea" id="image-encoded-result" placeholder="Encoded image base64 will appear here"></textarea>
             <button onclick="decodeImage()">Decode</button>
@@ -361,7 +392,7 @@
             document.getElementById('image-section').style.display = 'none';
             document.getElementById('pdf-section').style.display = 'none';
             document.getElementById('xml-section').style.display = 'none';
-            document.getElementById('message-section').style.display = 'none';
+            document.getElementById('message-section'). style.display = 'none';
             document.getElementById('zip-section').style.display = 'none';
             document.getElementById('unzip-section').style.display = 'none';
             document.getElementById('jwt-section').style.display = 'none';
@@ -482,6 +513,15 @@
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function () {
+                    // Detect TIFF
+                    let mimeType = file.type;
+                    if (!mimeType) {
+                        if (file.name.toLowerCase().endsWith('.tiff') || file.name.toLowerCase().endsWith('.tif')) {
+                            mimeType = 'image/tiff';
+                        } else {
+                            mimeType = 'image/jpeg';
+                        }
+                    }
                     const base64String = reader.result.split(',')[1];
                     document.getElementById('image-encoded-result').value = base64String;
                     document.getElementById('image-result').style.display = 'none';
@@ -495,13 +535,18 @@
             const imageError = document.getElementById('image-error');
             const displayImage = document.getElementById('image-result');
             const downloadLink = document.getElementById('download-link');
-
+            // TIFF detection by extension or magic number (SUkq)
+            let mimeType = 'image/jpeg';
+            if (base64String.length > 100 && base64String.substring(0, 10).includes('SUkq')) {
+                mimeType = 'image/tiff';
+            }
             if (isValidBase64String(base64String)) {
                 imageError.style.display = 'none';
-                const imgSrc = 'data:image/jpeg;base64,' + base64String;
+                const imgSrc = 'data:' + mimeType + ';base64,' + base64String;
                 displayImage.src = imgSrc;
                 displayImage.style.display = 'block';
                 downloadLink.href = imgSrc;
+                downloadLink.download = mimeType === 'image/tiff' ? 'decoded-image.tiff' : 'decoded-image.jpg';
                 downloadLink.style.display = 'inline-block';
             } else {
                 displayImage.style.display = 'none';
@@ -606,7 +651,7 @@ function copyToClipboard() {
 }
 
 function createJwt() {
-    
+    // Simulate C# Encrypt(username) with base64 (replace with real encryption if needed)
     const credentials = document.getElementById('credentials-input').value;
     const validity = parseInt(document.getElementById('jwt-expiry-input').value) || 60; // minutes
     const secret = "";
@@ -827,7 +872,7 @@ async function unzipFile() {
 
     // Generate Auth Key using C#-like JWT logic with all parameters
     function generateAuthKeyJS(credentials, validityMinutes) {
-        // credentials: ""
+
         const secret = "";
         const key = CryptoJS.enc.Base64.parse(secret);
 
@@ -884,7 +929,8 @@ async function unzipFile() {
     }
 
     // Example usage:
-    sss
+    // let authKey = generateAuthKeyJS("help@syntizen.com|106|JUPUB-MNYOI-GQEEZ-NGSYD|SYNDEV", 60);
+    // alert(authKey);
 
     // JSON Beautifier function with collapsible viewer and line numbers
     function beautifyJson() {
@@ -1045,6 +1091,3 @@ async function unzipFile() {
 </body>
 
 </html>
-
-
-
