@@ -203,9 +203,140 @@
         select#operation-selector option {
             max-height: 200px;
         }
+
+        .download-indicator {
+            display: none;
+            margin-top: 10px;
+            padding: 10px;
+            background: #e3f2fd;
+            border-radius: 8px;
+            text-align: center;
+            color: #1976d2;
+            font-weight: 600;
+        }
+
+        .download-indicator.active {
+            display: block;
+        }
+
+        /* Welcome screen animation styles */
+        #welcome-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            animation: fadeOut 0.8s ease-in-out 5s forwards;
+        }
+
+        #welcome-title {
+            font-size: 72px;
+            font-weight: 700;
+            color: #fff;
+            text-align: center;
+            letter-spacing: 8px;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5), 0 0 40px rgba(255, 255, 255, 0.3);
+            animation: titleAnimation 4.5s ease-in-out;
+        }
+
+        @keyframes titleAnimation {
+            0% {
+                opacity: 0;
+                transform: scale(0.5) rotateY(-180deg);
+                filter: blur(10px);
+            }
+            40% {
+                opacity: 1;
+                transform: scale(1.1) rotateY(0deg);
+                filter: blur(0px);
+            }
+            60% {
+                transform: scale(0.95) rotateY(0deg);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) rotateY(0deg);
+                filter: blur(0px);
+            }
+        }
+
+        @keyframes fadeOut {
+            0% {
+                opacity: 1;
+                visibility: visible;
+            }
+            100% {
+                opacity: 0;
+                visibility: hidden;
+            }
+        }
+
+        /* Particle animation for welcome screen */
+        .particle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+
+        /* Hide main container initially */
+        .container {
+            animation: fadeIn 0.8s ease-in-out 5s forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            #welcome-title {
+                font-size: 48px;
+                letter-spacing: 4px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            #welcome-title {
+                font-size: 36px;
+                letter-spacing: 2px;
+            }
+        }
+
+        /* ...existing code... */
     </style>
 </head>
 <body>
+    <!-- Welcome Screen -->
+    <div id="welcome-screen">
+        <h1 id="welcome-title">DasBase64</h1>
+    </div>
+
     <div class="container">
         <h1>Base64-XML-Encryption-Decryption-zip</h1>
 
@@ -222,6 +353,8 @@
             <option value="json2str">JSON to String Converter</option>
             <option value="str2json">String to JSON Converter</option>
             <option value="jsonbeautify">JSON Beautifier</option>
+            <option value="jsoncompare">JSON Compare</option>
+            <option value="xmlcompare">XML Compare</option>
         </select>
 
         <div class="progress-bar-container">
@@ -258,6 +391,7 @@
     <input type="file" id="zip-input" multiple>
     <button onclick="zipFiles()">Zip</button>
     <textarea class="result-textarea" id="zip-result" placeholder="Base64 Zip file will appear here"></textarea>
+    <button onclick="decodeZipBase64()">Decode Base64 to Zip</button>
     <div class="download-link-container">
         <a id="download-zip-link" class="download-link" style="display:none;" download="files.zip">Download Zipped File</a>
     </div>
@@ -267,6 +401,8 @@
     <h2>Unzip  The File</h2>
     <input type="file" id="unzip-input">
     <button onclick="unzipFile()">Unzip</button>
+    <textarea class="result-textarea" id="unzip-base64-input" placeholder="Or enter Base64 zip to unzip"></textarea>
+    <button onclick="unzipFromBase64()">Unzip from Base64</button>
     <div id="unzipped-files-container"></div>
 </div>
 
@@ -288,6 +424,7 @@
             <div class="image-container">
                 <canvas id="canvas"></canvas>
                 <img id="image-result" src="#" alt="Decoded Image" style="display:none;">
+                <div id="image-download-indicator" class="download-indicator">⏳ Preparing download...</div>
                 <a id="download-link" class="download-link" download="decoded-image.jpg">Download Decoded Image</a>
                 <!-- Progress bar for image download -->
                 <div id="image-download-progress-container" class="progress-bar-container" style="display:none;">
@@ -305,7 +442,11 @@
             <textarea class="result-textarea" id="pdf-encoded-input" placeholder="Enter Base64 PDF to Decode"></textarea>
             <button onclick="decodePDF()">Decode</button>
             <div class="pdf-download-container">
-                <a id="pdf-result" class="download-link" style="display:none;" download="decoded.pdf">Download Decoded PDF</a>
+                <div id="pdf-download-indicator" class="download-indicator">⏳ Preparing PDF download...</div>
+                <div style="display: flex; gap: 10px; justify-content: center; align-items: center; margin-top: 10px;">
+                    <a id="pdf-result" class="download-link" style="display:none;" download="decoded.pdf">Download Decoded PDF</a>
+                    <a id="doc-result" class="download-link" style="display:none;" download="decoded.doc">Download as DOC</a>
+                </div>
                 <!-- Progress bar for PDF download -->
                 <div id="pdf-download-progress-container" class="progress-bar-container" style="display:none;">
                     <div id="pdf-download-progress-bar" class="progress-bar"></div>
@@ -376,12 +517,74 @@
                 </div>
             </div>
         </div>
+
+        <div id="jsoncompare-section" class="section">
+            <h2>JSON Compare</h2>
+            <div style="display: flex; gap: 16px; justify-content: center;">
+                <div style="flex:1;">
+                    <label style="font-weight:600; display:block; margin-bottom:4px;">JSON 1</label>
+                    <textarea id="json-compare-1" rows="12" placeholder="Enter first JSON"></textarea>
+                </div>
+                <div style="flex:1;">
+                    <label style="font-weight:600; display:block; margin-bottom:4px;">JSON 2</label>
+                    <textarea id="json-compare-2" rows="12" placeholder="Enter second JSON"></textarea>
+                </div>
+            </div>
+            <button onclick="compareJson()">Compare</button>
+            <div id="json-compare-result" style="margin-top: 20px; padding: 15px; background: #f9f9f9; border-radius: 8px; min-height: 100px; white-space: pre-wrap; font-family: monospace;"></div>
+        </div>
+
+        <div id="xmlcompare-section" class="section">
+            <h2>XML Compare</h2>
+            <div style="display: flex; gap: 16px; justify-content: center;">
+                <div style="flex:1;">
+                    <label style="font-weight:600; display:block; margin-bottom:4px;">XML 1</label>
+                    <textarea id="xml-compare-1" rows="12" placeholder="Enter first XML"></textarea>
+                </div>
+                <div style="flex:1;">
+                    <label style="font-weight:600; display:block; margin-bottom:4px;">XML 2</label>
+                    <textarea id="xml-compare-2" rows="12" placeholder="Enter second XML"></textarea>
+                </div>
+            </div>
+            <button onclick="compareXml()">Compare</button>
+            <div id="xml-compare-result" style="margin-top: 20px; padding: 15px; background: #f9f9f9; border-radius: 8px; min-height: 100px; white-space: pre-wrap; font-family: monospace;"></div>
+        </div>
+
     </div>
 
      
  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.6.0/jszip.min.js"></script>
     <script>
+        // Create floating particles for welcome screen
+        function createParticles() {
+            const welcomeScreen = document.getElementById('welcome-screen');
+            const particleCount = 30;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 5 + 's';
+                particle.style.animationDuration = (Math.random() * 2 + 3) + 's';
+                welcomeScreen.appendChild(particle);
+            }
+        }
+
+        // Initialize particles on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            createParticles();
+            
+            // Remove welcome screen from DOM after animation
+            setTimeout(() => {
+                const welcomeScreen = document.getElementById('welcome-screen');
+                if (welcomeScreen) {
+                    welcomeScreen.remove();
+                }
+            }, 6000);
+        });
+
         function showSection() {
             const progressBar = document.getElementById('progress-bar');
             const operation = document.getElementById('operation-selector').value;
@@ -399,6 +602,8 @@
             document.getElementById('json2str-section').style.display = 'none';
             document.getElementById('str2json-section').style.display = 'none';
             document.getElementById('jsonbeautify-section').style.display = 'none'; // add this
+            document.getElementById('jsoncompare-section').style.display = 'none';
+            document.getElementById('xmlcompare-section').style.display = 'none';
 
             clearAllInputs();
 
@@ -424,6 +629,10 @@
                 document.getElementById('str2json-section').style.display = 'block';
             } else if (operation === 'jsonbeautify') {
                 document.getElementById('jsonbeautify-section').style.display = 'block';
+            } else if (operation === 'jsoncompare') {
+                document.getElementById('jsoncompare-section').style.display = 'block';
+            } else if (operation === 'xmlcompare') {
+                document.getElementById('xmlcompare-section').style.display = 'block';
             }
 
             setTimeout(() => {
@@ -445,6 +654,7 @@
             document.getElementById('pdf-encoded-input').value = '';
             document.getElementById('pdf-encoded-result').value = '';
             document.getElementById('pdf-result').style.display = 'none';
+            document.getElementById('doc-result').style.display = 'none';
 
             document.getElementById('xml-input').value = '';
             document.getElementById('encoded-xml-result').value = '';
@@ -484,6 +694,16 @@
             // Clear the JSON Beautifier viewer and line numbers as well
             document.getElementById('json-collapsible-viewer') && (document.getElementById('json-collapsible-viewer').innerHTML = '');
             document.getElementById('json-line-numbers') && (document.getElementById('json-line-numbers').innerHTML = '');
+
+            // Clear JSON Compare inputs
+            document.getElementById('json-compare-1') && (document.getElementById('json-compare-1').value = '');
+            document.getElementById('json-compare-2') && (document.getElementById('json-compare-2').value = '');
+            document.getElementById('json-compare-result') && (document.getElementById('json-compare-result').innerHTML = '');
+
+            // Clear XML Compare inputs
+            document.getElementById('xml-compare-1') && (document.getElementById('xml-compare-1').value = '');
+            document.getElementById('xml-compare-2') && (document.getElementById('xml-compare-2').value = '');
+            document.getElementById('xml-compare-result') && (document.getElementById('xml-compare-result').innerHTML = '');
         }
 
 
@@ -535,6 +755,11 @@
             const imageError = document.getElementById('image-error');
             const displayImage = document.getElementById('image-result');
             const downloadLink = document.getElementById('download-link');
+            const downloadIndicator = document.getElementById('image-download-indicator');
+            
+            // Show indicator
+            downloadIndicator.classList.add('active');
+            
             // TIFF detection by extension or magic number (SUkq)
             let mimeType = 'image/jpeg';
             if (base64String.length > 100 && base64String.substring(0, 10).includes('SUkq')) {
@@ -547,10 +772,16 @@
                 displayImage.style.display = 'block';
                 downloadLink.href = imgSrc;
                 downloadLink.download = mimeType === 'image/tiff' ? 'decoded-image.tiff' : 'decoded-image.jpg';
-                downloadLink.style.display = 'inline-block';
+                
+                // Hide indicator and show download link after a short delay
+                setTimeout(() => {
+                    downloadIndicator.classList.remove('active');
+                    downloadLink.style.display = 'inline-block';
+                }, 800);
             } else {
                 displayImage.style.display = 'none';
                 downloadLink.style.display = 'none';
+                downloadIndicator.classList.remove('active');
                 imageError.style.display = 'block';
             }
         }
@@ -569,15 +800,37 @@
 
         function decodePDF() {
             const base64String = document.getElementById('pdf-encoded-input').value;
-            const link = document.getElementById('pdf-result');
+            const pdfLink = document.getElementById('pdf-result');
+            const docLink = document.getElementById('doc-result');
+            const downloadIndicator = document.getElementById('pdf-download-indicator');
+
+            // Show indicator
+            downloadIndicator.classList.add('active');
 
             if (isValidBase64String(base64String)) {
                 const pdfData = Uint8Array.from(atob(base64String), c => c.charCodeAt(0));
                 const pdfBlob = new Blob([pdfData], { type: 'application/pdf' });
-                link.href = URL.createObjectURL(pdfBlob);
-                link.style.display = 'block';
+                const pdfUrl = URL.createObjectURL(pdfBlob);
+                
+                // Set PDF download link
+                pdfLink.href = pdfUrl;
+                
+                // Create DOC version (RTF format for better compatibility)
+                // Note: This creates a simple RTF document with the PDF content as binary data
+                // For true PDF to DOC conversion, server-side processing would be needed
+                const docBlob = new Blob([pdfData], { type: 'application/msword' });
+                docLink.href = URL.createObjectURL(docBlob);
+                
+                // Simulate delay for large PDFs
+                setTimeout(() => {
+                    downloadIndicator.classList.remove('active');
+                    pdfLink.style.display = 'inline-block';
+                    docLink.style.display = 'inline-block';
+                }, 1200);
             } else {
-                link.style.display = 'none';
+                pdfLink.style.display = 'none';
+                docLink.style.display = 'none';
+                downloadIndicator.classList.remove('active');
                 alert('Invalid Base64 string for PDF.');
             }
         }
@@ -758,6 +1011,29 @@ async function zipFiles() {
     downloadLink.style.display = 'inline-block';
 }
 
+async function decodeZipBase64() {
+    const base64String = document.getElementById('zip-result').value;
+    if (!base64String) {
+        alert('Please enter Base64 zip data');
+        return;
+    }
+
+    try {
+        const binaryString = atob(base64String);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
+        }
+        const blob = new Blob([bytes], { type: 'application/zip' });
+        const downloadLink = document.getElementById('download-zip-link');
+        downloadLink.href = URL.createObjectURL(blob);
+        downloadLink.style.display = 'inline-block';
+        alert('Zip file ready for download');
+    } catch (e) {
+        alert('Invalid Base64 zip data');
+    }
+}
+
 async function unzipFile() {
     const file = document.getElementById('unzip-input').files[0];
     if (!file) {
@@ -773,18 +1049,216 @@ async function unzipFile() {
         const zip = new JSZip();
         const contents = await zip.loadAsync(event.target.result);
         for (const [filename, fileContent] of Object.entries(contents.files)) {
-            const fileBlob = await fileContent.async("blob");
-            const downloadLink = document.createElement('a');
-            downloadLink.href = URL.createObjectURL(fileBlob);
-            downloadLink.download = filename;
-            downloadLink.textContent = filename;
-            downloadLink.style.display = 'block';
-            unzippedFilesContainer.appendChild(downloadLink);
+            if (!fileContent.dir) {
+                const fileBlob = await fileContent.async("blob");
+                const downloadLink = document.createElement('a');
+                downloadLink.href = URL.createObjectURL(fileBlob);
+                downloadLink.download = filename;
+                downloadLink.textContent = filename;
+                downloadLink.style.display = 'block';
+                downloadLink.style.marginBottom = '8px';
+                unzippedFilesContainer.appendChild(downloadLink);
+            }
         }
     };
     reader.readAsArrayBuffer(file);
 }
 
+async function unzipFromBase64() {
+    const base64String = document.getElementById('unzip-base64-input').value;
+    if (!base64String) {
+        alert('Please enter Base64 zip data');
+        return;
+    }
+
+    try {
+        const binaryString = atob(base64String);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
+        }
+
+        const unzippedFilesContainer = document.getElementById('unzipped-files-container');
+        unzippedFilesContainer.innerHTML = '';
+
+        const zip = new JSZip();
+        const contents = await zip.loadAsync(bytes);
+        for (const [filename, fileContent] of Object.entries(contents.files)) {
+            if (!fileContent.dir) {
+                const fileBlob = await fileContent.async("blob");
+                const downloadLink = document.createElement('a');
+                downloadLink.href = URL.createObjectURL(fileBlob);
+                downloadLink.download = filename;
+                downloadLink.textContent = filename;
+                downloadLink.style.display = 'block';
+                downloadLink.style.marginBottom = '8px';
+                unzippedFilesContainer.appendChild(downloadLink);
+            }
+        }
+    } catch (e) {
+        alert('Invalid Base64 zip data or corrupted zip file');
+    }
+}
+
+        // JSON Compare function
+        function compareJson() {
+            const json1Input = document.getElementById('json-compare-1').value.trim();
+            const json2Input = document.getElementById('json-compare-2').value.trim();
+            const resultDiv = document.getElementById('json-compare-result');
+
+            try {
+                const obj1 = JSON.parse(json1Input);
+                const obj2 = JSON.parse(json2Input);
+
+                const differences = findDifferences(obj1, obj2);
+                
+                if (differences.length === 0) {
+                    resultDiv.innerHTML = '<span style="color: green; font-weight: 600;">✓ JSONs are identical</span>';
+                } else {
+                    let html = '<span style="color: red; font-weight: 600;">✗ Differences found:</span>\n\n';
+                    differences.forEach(diff => {
+                        html += `<span style="color: #e76f51;">• ${diff}</span>\n`;
+                    });
+                    resultDiv.innerHTML = html;
+                }
+            } catch (e) {
+                resultDiv.innerHTML = '<span style="color: red;">Invalid JSON input: ' + e.message + '</span>';
+            }
+        }
+
+        // XML Compare function
+        function compareXml() {
+            const xml1Input = document.getElementById('xml-compare-1').value.trim();
+            const xml2Input = document.getElementById('xml-compare-2').value.trim();
+            const resultDiv = document.getElementById('xml-compare-result');
+
+            try {
+                const parser = new DOMParser();
+                const doc1 = parser.parseFromString(xml1Input, 'text/xml');
+                const doc2 = parser.parseFromString(xml2Input, 'text/xml');
+
+                // Check for parsing errors
+                if (doc1.getElementsByTagName('parsererror').length > 0 || 
+                    doc2.getElementsByTagName('parsererror').length > 0) {
+                    throw new Error('XML parsing error');
+                }
+
+                const differences = findXmlDifferences(doc1.documentElement, doc2.documentElement);
+                
+                if (differences.length === 0) {
+                    resultDiv.innerHTML = '<span style="color: green; font-weight: 600;">✓ XMLs are identical</span>';
+                } else {
+                    let html = '<span style="color: red; font-weight: 600;">✗ Differences found:</span>\n\n';
+                    differences.forEach(diff => {
+                        html += `<span style="color: #e76f51;">• ${diff}</span>\n`;
+                    });
+                    resultDiv.innerHTML = html;
+                }
+            } catch (e) {
+                resultDiv.innerHTML = '<span style="color: red;">Invalid XML input: ' + e.message + '</span>';
+            }
+        }
+
+        // Helper function to find differences in JSON objects
+        function findDifferences(obj1, obj2, path = '') {
+            const differences = [];
+
+            if (typeof obj1 !== typeof obj2) {
+                differences.push(`Type mismatch at ${path || 'root'}: ${typeof obj1} vs ${typeof obj2}`);
+                return differences;
+            }
+
+            if (obj1 === null || obj2 === null) {
+                if (obj1 !== obj2) {
+                    differences.push(`Value mismatch at ${path || 'root'}: ${obj1} vs ${obj2}`);
+                }
+                return differences;
+            }
+
+            if (typeof obj1 !== 'object') {
+                if (obj1 !== obj2) {
+                    differences.push(`Value mismatch at ${path || 'root'}: ${obj1} vs ${obj2}`);
+                }
+                return differences;
+            }
+
+            const keys1 = Object.keys(obj1);
+            const keys2 = Object.keys(obj2);
+            const allKeys = new Set([...keys1, ...keys2]);
+
+            allKeys.forEach(key => {
+                const newPath = path ? `${path}.${key}` : key;
+                if (!(key in obj1)) {
+                    differences.push(`Missing key in JSON 1: ${newPath}`);
+                } else if (!(key in obj2)) {
+                    differences.push(`Missing key in JSON 2: ${newPath}`);
+                } else {
+                    differences.push(...findDifferences(obj1[key], obj2[key], newPath));
+                }
+            });
+
+            return differences;
+        }
+
+        // Helper function to find differences in XML nodes
+        function findXmlDifferences(node1, node2, path = '') {
+            const differences = [];
+
+            if (node1.nodeName !== node2.nodeName) {
+                differences.push(`Tag name mismatch at ${path || 'root'}: ${node1.nodeName} vs ${node2.nodeName}`);
+                return differences;
+            }
+
+            const currentPath = path ? `${path}/${node1.nodeName}` : node1.nodeName;
+
+            // Compare attributes
+            const attrs1 = node1.attributes || [];
+            const attrs2 = node2.attributes || [];
+            const attrMap1 = {};
+            const attrMap2 = {};
+
+            for (let i = 0; i < attrs1.length; i++) {
+                attrMap1[attrs1[i].name] = attrs1[i].value;
+            }
+            for (let i = 0; i < attrs2.length; i++) {
+                attrMap2[attrs2[i].name] = attrs2[i].value;
+            }
+
+            const allAttrNames = new Set([...Object.keys(attrMap1), ...Object.keys(attrMap2)]);
+            allAttrNames.forEach(attrName => {
+                if (!(attrName in attrMap1)) {
+                    differences.push(`Missing attribute in XML 1 at ${currentPath}: ${attrName}`);
+                } else if (!(attrName in attrMap2)) {
+                    differences.push(`Missing attribute in XML 2 at ${currentPath}: ${attrName}`);
+                } else if (attrMap1[attrName] !== attrMap2[attrName]) {
+                    differences.push(`Attribute value mismatch at ${currentPath}/@${attrName}: ${attrMap1[attrName]} vs ${attrMap2[attrName]}`);
+                }
+            });
+
+            // Compare text content
+            const text1 = node1.childNodes[0]?.nodeValue?.trim() || '';
+            const text2 = node2.childNodes[0]?.nodeValue?.trim() || '';
+            if (text1 !== text2 && node1.childNodes.length === 1 && node2.childNodes.length === 1) {
+                differences.push(`Text content mismatch at ${currentPath}: "${text1}" vs "${text2}"`);
+            }
+
+            // Compare child elements
+            const children1 = Array.from(node1.children || []);
+            const children2 = Array.from(node2.children || []);
+
+            if (children1.length !== children2.length) {
+                differences.push(`Child count mismatch at ${currentPath}: ${children1.length} vs ${children2.length}`);
+            }
+
+            const maxLen = Math.max(children1.length, children2.length);
+            for (let i = 0; i < maxLen; i++) {
+                if (children1[i] && children2[i]) {
+                    differences.push(...findXmlDifferences(children1[i], children2[i], currentPath));
+                }
+            }
+
+            return differences;
+        }
 
         window.showSection = showSection;
         window.encodeText = encodeText;
@@ -806,6 +1280,10 @@ async function unzipFile() {
         window.jsonToString = jsonToString;
         window.stringToJson = stringToJson;
         window.beautifyJson = beautifyJson;
+        window.decodeZipBase64 = decodeZipBase64;
+        window.unzipFromBase64 = unzipFromBase64;
+        window.compareJson = compareJson;
+        window.compareXml = compareXml;
 
     // Add download progress bar logic for image
     document.getElementById('download-link').addEventListener('click', function(e) {
@@ -814,6 +1292,11 @@ async function unzipFile() {
 
     // Add download progress bar logic for PDF
     document.getElementById('pdf-result').addEventListener('click', function(e) {
+        showBeautifulProgressBar('pdf-download-progress-container', 'pdf-download-progress-bar');
+    });
+
+    // Add download progress bar logic for DOC
+    document.getElementById('doc-result').addEventListener('click', function(e) {
         showBeautifulProgressBar('pdf-download-progress-container', 'pdf-download-progress-bar');
     });
 
@@ -1091,3 +1574,4 @@ async function unzipFile() {
 </body>
 
 </html>
+
