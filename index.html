@@ -103,6 +103,12 @@
             font-family: inherit;
         }
 
+        /* FIX: Ensure dropdown options have a solid background for Windows visibility */
+        select#operation-selector option {
+            background-color: #1e293b;
+            color: white;
+        }
+
         /* --- Main Content Area --- */
         .content-body {
             flex: 1;
@@ -598,7 +604,7 @@
 
         // --- Init ---
         document.addEventListener('DOMContentLoaded', () => {
-            // Particle logic can be added here if needed, but the clean UI is ready.
+            // UI Initialization
         });
     </script>
 </body>
