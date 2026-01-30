@@ -3,312 +3,283 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Toolkit v2.0 | Dev Suite</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+    <title>DevTool Pro | Base64 & Crypto Suite</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700&display=swap">
     <style>
         :root {
-            /* Palette based on the reference image */
-            --bg-body: #0f172a;       /* Deep Navy */
-            --bg-card: #1e293b;       /* Lighter Navy */
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            
-            /* Card Colors */
-            --color-blue: #3b82f6;
-            --color-green: #10b981;
-            --color-orange: #f59e0b;
-            --color-red: #ef4444;
-            --color-pink: #ec4899;
-            --color-purple: #8b5cf6;
-            
-            --border: rgba(255, 255, 255, 0.08);
-            --glass: rgba(30, 41, 59, 0.7);
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --bg: #0f172a;
+            --card: rgba(30, 41, 59, 0.7);
+            --border: rgba(255, 255, 255, 0.1);
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --accent-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
         }
 
         * { box-sizing: border-box; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--bg-body);
-            color: var(--text-primary);
-            margin: 0;
+            background-color: var(--bg);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.15) 0px, transparent 50%);
+            color: var(--text-main);
             min-height: 100vh;
+            margin: 0;
             display: flex;
-            flex-direction: column;
-            overflow-x: hidden;
-        }
-
-        /* --- Welcome Screen (Kept from your code) --- */
-        #welcome-screen {
-            position: fixed; inset: 0; background: var(--bg-body); z-index: 9999;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            animation: fadeOut 0.5s ease-in-out 1.5s forwards; /* Speeded up slightly for UX */
-        }
-        @keyframes fadeOut { to { opacity: 0; visibility: hidden; } }
-
-        /* --- Main Layout --- */
-        .app-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            width: 100%;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* --- Header --- */
-        .header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 20px 0;
-            margin-bottom: 20px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .brand {
-            font-size: 1.5rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .back-btn {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid var(--border);
-            color: var(--text-secondary);
-            padding: 8px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            display: none; /* Hidden on dashboard */
-            align-items: center;
-            gap: 8px;
-            font-size: 0.9rem;
-        }
-        .back-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
-
-        /* --- Dashboard Grid (The New UI) --- */
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-            gap: 20px;
-            animation: slideUp 0.6s ease-out;
-        }
-
-        .tool-card {
-            aspect-ratio: 1;
-            border-radius: 16px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
-            cursor: pointer;
-            text-align: center;
-            position: relative;
+            align-items: center;
             overflow: hidden;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            border: 1px solid rgba(255,255,255,0.05);
         }
 
-        .tool-card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2); }
-
-        /* Card Icons & Colors */
-        .tool-card i { font-size: 2rem; margin-bottom: 15px; color: white; }
-        .tool-card span { font-size: 0.95rem; font-weight: 500; color: rgba(255,255,255,0.9); }
-
-        /* Color Classes */
-        .bg-blue { background: var(--color-blue); }
-        .bg-green { background: var(--color-green); }
-        .bg-orange { background: var(--color-orange); }
-        .bg-red { background: var(--color-red); }
-        .bg-purple { background: var(--color-purple); }
-        .bg-pink { background: var(--color-pink); }
-
-        /* --- Active Tool Container --- */
-        .tool-workspace {
-            display: none; /* Hidden by default */
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 40px;
-            min-height: 60vh;
-            animation: fadeIn 0.4s ease;
+        /* --- Welcome Screen --- */
+        #welcome-screen {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            animation: fadeOut 0.8s ease-in-out 3s forwards;
         }
 
-        /* --- Form Elements (Restyled for modern look) --- */
-        .section h2 {
-            margin-top: 0;
-            font-size: 1.8rem;
-            background: linear-gradient(to right, #fff, #94a3b8);
+        #welcome-title {
+            font-size: clamp(2rem, 8vw, 4rem);
+            font-weight: 800;
+            background: var(--accent-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 30px;
+            letter-spacing: -0.02em;
+            margin: 0;
         }
 
+        /* --- App Shell --- */
+        .container {
+            width: 95%;
+            max-width: 1300px;
+            height: 90vh;
+            background: var(--card);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            animation: fadeIn 1s ease 3.2s forwards;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .header-bar {
+            padding: 20px 40px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(15, 23, 42, 0.3);
+        }
+
+        .header-bar h1 {
+            font-size: 1.25rem;
+            margin: 0;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        /* --- Custom Select --- */
+        select#operation-selector {
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            outline: none;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        /* FIX: Ensure dropdown options have a solid background for Windows visibility */
+        select#operation-selector option {
+            background-color: #1e293b;
+            color: white;
+        }
+
+        /* --- Main Content Area --- */
+        .content-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 40px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--border) transparent;
+        }
+
+        .section {
+            display: none;
+            max-width: 1000px;
+            margin: 0 auto;
+            animation: slideUp 0.4s ease-out;
+        }
+
+        .section h2 {
+            font-size: 1.75rem;
+            margin-top: 0;
+            margin-bottom: 25px;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* --- Form Elements --- */
         textarea, input[type="text"], input[type="number"], input[type="file"] {
             width: 100%;
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(0, 0, 0, 0.2);
             border: 1px solid var(--border);
             border-radius: 12px;
             padding: 15px;
-            color: var(--text-primary);
-            font-family: monospace;
+            color: white;
+            font-size: 15px;
             margin-bottom: 15px;
-            font-size: 14px;
+            font-family: 'Inter', sans-serif;
         }
-        
+
         textarea:focus, input:focus {
+            border-color: var(--primary);
             outline: none;
-            border-color: var(--color-blue);
-            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+            background: rgba(0, 0, 0, 0.4);
         }
 
         .result-textarea {
-            background: rgba(59, 130, 246, 0.05) !important;
-            border-color: rgba(59, 130, 246, 0.2) !important;
-            color: #93c5fd !important;
+            background: rgba(99, 102, 241, 0.05) !important;
+            border-color: rgba(99, 102, 241, 0.2) !important;
+            color: #a5b4fc !important;
+            font-family: monospace;
         }
 
         button {
-            background: var(--color-blue);
+            background: var(--primary);
             color: white;
-            border: none;
             padding: 12px 24px;
             border-radius: 10px;
+            border: none;
             font-weight: 600;
             cursor: pointer;
-            margin-right: 10px;
-            margin-bottom: 10px;
+            display: inline-flex;
+            align-items: center;
+            margin: 5px;
         }
-        button:hover { filter: brightness(1.1); }
 
-        /* Helpers */
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .hidden { display: none !important; }
-        
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        button:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3);
+        }
 
-        /* Mobile */
+        /* --- Progress Bar --- */
+        .progress-bar-container {
+            height: 3px;
+            background: rgba(255,255,255,0.05);
+            width: 100%;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--accent-gradient);
+            width: 0;
+            transition: width 0.4s ease;
+        }
+
+        /* --- Tool Grid (2-Column) --- */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        /* --- Animations --- */
+        @keyframes fadeOut { to { opacity: 0; visibility: hidden; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Mobile Adjustments */
         @media (max-width: 768px) {
             .grid-2 { grid-template-columns: 1fr; }
-            .dashboard-grid { grid-template-columns: repeat(2, 1fr); }
+            .header-bar { flex-direction: column; gap: 15px; text-align: center; }
+            .container { height: 95vh; }
         }
+
+        /* Specific Component Styles */
+        #unzipped-files-container a {
+            color: var(--primary);
+            text-decoration: none;
+            background: rgba(255,255,255,0.05);
+            padding: 10px;
+            border-radius: 8px;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .json-toggle { color: var(--primary); margin-right: 5px; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <div id="welcome-screen">
-        <h1 style="font-size: 3rem; background: linear-gradient(to right, #6366f1, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">DevTool Suite</h1>
+        <h1 id="welcome-title">DevTool Suite</h1>
+        <p style="color: var(--text-dim); font-weight: 500; margin-top: 15px;">Developed By El-olam</p>
     </div>
 
-    <div class="app-container">
-        
-        <div class="header">
-            <div class="brand"><i class="fas fa-layer-group" style="margin-right: 10px;"></i>Toolkit v2.0</div>
-            <button class="back-btn" id="back-button" onclick="goHome()">
-                <i class="fas fa-arrow-left"></i> Back to Grid
-            </button>
-            <select id="operation-selector" onchange="handleSelectChange()" style="display:none;">
-                <option value="">Select</option>
-                <option value="text">Base64 Text</option>
+    <div class="container">
+        <div class="header-bar">
+            <h1>Toolkit v2.0</h1>
+            <select id="operation-selector" onchange="showSection()">
+                <option value="">Select an Operation</option>
+                <option value="text">Base64 Encode/Decode</option>
                 <option value="image">Base64 Image</option>
                 <option value="pdf">Base64 PDF</option>
-                <option value="xml">XML Tool</option>
-                <option value="message">Encryption</option>
-                <option value="zip">Zip Tool</option>
-                <option value="unzip">Unzip Tool</option>
+                <option value="xml">XML Encode/Decode</option>
+                <option value="message">AES Encryption</option>
+                <option value="zip">Zip File Converter</option>
+                <option value="unzip">Unzip Explorer</option>
                 <option value="jwt">JWT Studio</option>
-                <option value="json2str">JSON String</option>
-                <option value="str2json">String JSON</option>
-                <option value="jsonbeautify">Beautifier</option>
+                <option value="json2str">JSON to String</option>
+                <option value="str2json">String to JSON</option>
+                <option value="jsonbeautify">JSON Beautifier</option>
                 <option value="jsoncompare">JSON Compare</option>
                 <option value="xmlcompare">XML Compare</option>
             </select>
         </div>
 
-        <div id="dashboard-view" class="dashboard-grid">
-            <div class="tool-card bg-blue" onclick="activateTool('text')">
-                <i class="fas fa-font"></i>
-                <span>Base64 Text</span>
-            </div>
-            <div class="tool-card bg-blue" onclick="activateTool('image')">
-                <i class="fas fa-image"></i>
-                <span>Base64 Image</span>
-            </div>
-            <div class="tool-card bg-blue" onclick="activateTool('pdf')">
-                <i class="fas fa-file-pdf"></i>
-                <span>Base64 PDF</span>
-            </div>
-            
-            <div class="tool-card bg-green" onclick="activateTool('message')">
-                <i class="fas fa-lock"></i>
-                <span>AES Encryption</span>
-            </div>
-            <div class="tool-card bg-green" onclick="activateTool('jsonbeautify')">
-                <i class="fas fa-code"></i>
-                <span>JSON Beautifier</span>
-            </div>
-
-            <div class="tool-card bg-orange" onclick="activateTool('zip')">
-                <i class="fas fa-file-zipper"></i>
-                <span>Zip Converter</span>
-            </div>
-            
-            <div class="tool-card bg-pink" onclick="activateTool('unzip')">
-                <i class="fas fa-folder-open"></i>
-                <span>Unzip Explorer</span>
-            </div>
-            <div class="tool-card bg-red" onclick="activateTool('jwt')">
-                <i class="fas fa-shield-halved"></i>
-                <span>JWT Studio</span>
-            </div>
-
-            <div class="tool-card bg-purple" onclick="activateTool('str2json')">
-                <i class="fas fa-arrow-right-to-bracket"></i>
-                <span>String to JSON</span>
-            </div>
-            <div class="tool-card bg-purple" onclick="activateTool('json2str')">
-                <i class="fas fa-quote-right"></i>
-                <span>JSON to String</span>
-            </div>
-             <div class="tool-card bg-blue" onclick="activateTool('xml')">
-                <i class="fas fa-code"></i>
-                <span>XML Base64</span>
-            </div>
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progress-bar"></div>
         </div>
 
-        <div id="workspace-view" class="tool-workspace">
+        <div class="content-body">
             
             <div id="text-section" class="section">
-                <h2>Base64 Text Encode/Decode</h2>
-                <div class="grid-2">
-                    <div>
-                        <textarea id="text-input" rows="5" placeholder="Enter text to encode..."></textarea>
-                        <button onclick="encodeText()">Encode <i class="fas fa-arrow-down"></i></button>
-                    </div>
-                    <div>
-                         <textarea class="result-textarea" id="encoded-text-result" rows="5" placeholder="Encoded result..."></textarea>
-                         <button onclick="decodeText()">Decode <i class="fas fa-arrow-up"></i></button>
-                    </div>
-                </div>
-                <textarea class="result-textarea" id="decoded-text-result" rows="3" placeholder="Decoded result..." style="margin-top:15px;"></textarea>
+                <h2>Base64 Text</h2>
+                <textarea id="text-input" rows="4" placeholder="Enter text to encode..."></textarea>
+                <button onclick="encodeText()">Encode</button>
+                <textarea class="result-textarea" id="encoded-text-result" placeholder="Encoded result..."></textarea>
+                <button onclick="decodeText()">Decode</button>
+                <textarea class="result-textarea" id="decoded-text-result" placeholder="Decoded result..."></textarea>
             </div>
 
             <div id="image-section" class="section">
                 <h2>Image to Base64</h2>
                 <input type="file" id="image-input" accept="image/*,.tiff,.tif">
                 <button onclick="encodeImage()">Generate Base64</button>
-                <textarea class="result-textarea" id="image-encoded-result" rows="5" placeholder="Base64 string..."></textarea>
+                <textarea class="result-textarea" id="image-encoded-result" placeholder="Base64 will appear here..."></textarea>
                 <button onclick="decodeImage()">Preview & Download</button>
                 <div style="margin-top: 20px; text-align: center;">
+                    <canvas id="canvas" style="display:none;"></canvas>
                     <img id="image-result" src="#" alt="Preview" style="display:none; max-width: 100%; border-radius: 12px; border: 1px solid var(--border);">
-                    <a id="download-link" style="display:none; color: var(--color-blue); margin-top: 10px;">Download Image</a>
+                    <div id="image-download-indicator" style="display:none; color: var(--primary);">Preparing...</div>
+                    <a id="download-link" style="display:none; color: var(--primary); text-decoration: none; font-weight: bold; margin-top: 10px;">Download Image</a>
                 </div>
             </div>
 
@@ -316,11 +287,14 @@
                 <h2>PDF Converter</h2>
                 <input type="file" id="pdf-input" accept=".pdf">
                 <button onclick="encodePDF()">Encode PDF</button>
-                <textarea class="result-textarea" id="pdf-encoded-result" rows="5"></textarea>
-                <hr style="border-color: var(--border); margin: 30px 0;">
-                <textarea id="pdf-encoded-input" rows="5" placeholder="Paste Base64 PDF to decode..."></textarea>
+                <textarea class="result-textarea" id="pdf-encoded-result"></textarea>
+                <hr style="border:0; border-top:1px solid var(--border); margin: 30px 0;">
+                <textarea id="pdf-encoded-input" placeholder="Paste Base64 PDF to decode..."></textarea>
                 <button onclick="decodePDF()">Decode PDF</button>
-                <a id="pdf-result" style="display:none; color: var(--color-blue); margin-left:10px;">Download PDF</a>
+                <div style="margin-top: 15px; display: flex; gap: 15px;">
+                    <a id="pdf-result" style="display:none; color: var(--primary);">Download PDF</a>
+                    <a id="doc-result" style="display:none; color: var(--primary);">Download DOC</a>
+                </div>
             </div>
 
             <div id="jwt-section" class="section">
@@ -331,44 +305,47 @@
                     <input type="number" id="jwt-expiry-input" placeholder="Expiry (Hours)">
                 </div>
                 <button onclick="createJwt()">Create JWT</button>
-                <textarea class="result-textarea" id="jwt-result" rows="4"></textarea>
-                <hr style="border-color: var(--border); margin: 30px 0;">
+                <textarea class="result-textarea" id="jwt-result"></textarea>
+                <hr style="border:0; border-top:1px solid var(--border); margin: 30px 0;">
                 <textarea id="jwt-decode-input" placeholder="Paste JWT to Decode..."></textarea>
                 <button onclick="decodeJwt()">Decode JWT</button>
-                <div id="jwt-decode-result" class="result-textarea" style="padding: 15px; border-radius: 8px; margin-top: 10px; min-height: 50px;">
+                <div id="jwt-decode-result" class="result-textarea" style="padding: 15px; border-radius: 8px; margin-top: 10px;">
+                    <button onclick="copyToClipboard()" style="padding: 5px 10px; font-size: 12px;">Copy</button>
                     <span id="jwt-decode-display"></span>
                 </div>
-                <div id="jwt-expiry" style="margin-top: 10px; color: var(--color-pink);"></div>
+                <div id="jwt-expiry" style="margin-top: 10px;"></div>
             </div>
 
             <div id="zip-section" class="section">
                 <h2>Zip Converter</h2>
                 <input type="file" id="zip-input" multiple>
                 <button onclick="zipFiles()">Generate Zip Base64</button>
-                <textarea class="result-textarea" id="zip-result" rows="5"></textarea>
+                <textarea class="result-textarea" id="zip-result"></textarea>
                 <button onclick="decodeZipBase64()">Download Zip from Base64</button>
-                <a id="download-zip-link" style="display:none; margin-left: 10px; color: var(--color-orange);">Download Zip File</a>
+                <a id="download-zip-link" style="display:none; color: var(--primary);">Download Zip File</a>
             </div>
 
             <div id="message-section" class="section">
                 <h2>AES Encryption</h2>
                 <textarea id="message-input" placeholder="Message to encrypt..."></textarea>
                 <input type="text" id="key-input" placeholder="32 Character Key">
-                <div class="grid-2">
-                    <button onclick="encryptMessage()">Encrypt</button>
-                    <button onclick="decryptMessage()" style="background: var(--bg-card); border: 1px solid var(--color-green);">Decrypt</button>
-                </div>
-                <textarea class="result-textarea" id="encrypted-message-result" placeholder="Encrypted result..."></textarea>
-                <textarea class="result-textarea" id="decrypted-message-result" placeholder="Decrypted result..."></textarea>
+                <button onclick="encryptMessage()">Encrypt</button>
+                <textarea class="result-textarea" id="encrypted-message-result"></textarea>
+                <button onclick="decryptMessage()">Decrypt</button>
+                <textarea class="result-textarea" id="decrypted-message-result"></textarea>
             </div>
 
             <div id="jsonbeautify-section" class="section">
                 <h2>JSON Beautifier</h2>
                 <div class="grid-2">
-                    <textarea id="jsonbeautify-input" rows="15" placeholder="Paste JSON..."></textarea>
-                    <div id="json-collapsible-viewer" style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 12px; overflow: auto; max-height: 500px; border: 1px solid var(--border);"></div>
+                    <div style="position:relative;">
+                        <textarea id="jsonbeautify-input" rows="15" placeholder="Paste JSON..."></textarea>
+                        <div id="jsonbeautify-input-lines" style="display:none;"></div>
+                    </div>
+                    <div id="json-collapsible-viewer" style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 12px; overflow: auto; max-height: 500px;"></div>
                 </div>
                 <button onclick="beautifyJson()" style="margin-top: 15px;">Process JSON</button>
+                <div id="json-line-numbers" style="display:none;"></div>
             </div>
 
             <div id="jsoncompare-section" class="section">
@@ -378,14 +355,14 @@
                     <textarea id="json-compare-2" rows="10" placeholder="JSON 2"></textarea>
                 </div>
                 <button onclick="compareJson()">Compare</button>
-                <div id="json-compare-result" style="margin-top: 15px; font-size: 1.2rem;"></div>
+                <div id="json-compare-result" style="margin-top: 15px;"></div>
             </div>
 
             <div id="unzip-section" class="section">
                 <h2>Unzip Files</h2>
                 <input type="file" id="unzip-input">
                 <button onclick="unzipFile()">Extract Zip</button>
-                <textarea id="unzip-base64-input" placeholder="Or paste Zip Base64..." style="margin-top:15px;"></textarea>
+                <textarea id="unzip-base64-input" placeholder="Or paste Zip Base64..."></textarea>
                 <button onclick="unzipFromBase64()">Extract from Base64</button>
                 <div id="unzipped-files-container" style="margin-top: 15px;"></div>
             </div>
@@ -394,14 +371,14 @@
                 <h2>JSON to String</h2>
                 <textarea id="json2str-input" rows="5"></textarea>
                 <button onclick="jsonToString()">Convert</button>
-                <textarea class="result-textarea" id="json2str-result" rows="5"></textarea>
+                <textarea class="result-textarea" id="json2str-result"></textarea>
             </div>
 
             <div id="str2json-section" class="section">
                 <h2>String to JSON</h2>
                 <textarea id="str2json-input" rows="5"></textarea>
                 <button onclick="stringToJson()">Convert</button>
-                <textarea class="result-textarea" id="str2json-result" rows="5"></textarea>
+                <textarea class="result-textarea" id="str2json-result"></textarea>
             </div>
 
             <div id="xmlcompare-section" class="section">
@@ -430,54 +407,32 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.6.0/jszip.min.js"></script>
     
     <script>
-        // --- NEW NAVIGATION LOGIC (To support the Grid View) ---
-        
-        // This simulates selecting an option from the original dropdown logic
-        function activateTool(toolId) {
-            const selector = document.getElementById('operation-selector');
-            selector.value = toolId;
-            handleSelectChange(); // Call the original handler
-            
-            // UI Transition
-            document.getElementById('dashboard-view').style.display = 'none';
-            document.getElementById('workspace-view').style.display = 'block';
-            document.getElementById('back-button').style.display = 'inline-flex';
-        }
-
-        function goHome() {
-            document.getElementById('dashboard-view').style.display = 'grid';
-            document.getElementById('workspace-view').style.display = 'none';
-            document.getElementById('back-button').style.display = 'none';
-            
-            // Reset internal state
-            document.getElementById('operation-selector').value = "";
-            clearAllInputs();
-            document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
-        }
-
-        // Renamed original showSection to handleSelectChange to avoid confusion, 
-        // but kept logic mostly same.
-        function handleSelectChange() {
+        // --- CORE UI LOGIC ---
+        function showSection() {
+            const progressBar = document.getElementById('progress-bar');
             const operation = document.getElementById('operation-selector').value;
+
+            progressBar.style.width = '100%';
             
-            // Hide all sections first
+            // Hide all
             document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+            
             clearAllInputs();
 
             if (operation) {
                 const target = document.getElementById(operation + '-section');
                 if (target) target.style.display = 'block';
             }
+
+            setTimeout(() => { progressBar.style.width = '0'; }, 600);
         }
 
-
-        // --- YOUR ORIGINAL LOGIC BELOW (UNTOUCHED) ---
-
+        // --- ORIGINAL LOGIC FUNCTIONS (MERGED) ---
         function clearAllInputs() {
             document.querySelectorAll('textarea, input[type="text"], input[type="number"]').forEach(i => i.value = '');
             document.querySelectorAll('input[type="file"]').forEach(i => i.value = null);
             document.querySelectorAll('.result-textarea span, #jwt-expiry, #unzipped-files-container, #json-compare-result, #xml-compare-result, #json-collapsible-viewer').forEach(c => c.innerHTML = '');
-            document.querySelectorAll('img, a').forEach(el => { if(el.id !== 'welcome-title' && el.id !== 'back-button') el.style.display = 'none'; });
+            document.querySelectorAll('img, a').forEach(el => { if(el.id !== 'welcome-title') el.style.display = 'none'; });
         }
 
         function isValidBase64String(base64String) {
@@ -606,7 +561,7 @@
             const isArray = Array.isArray(obj);
             const id = 'json-' + Math.random().toString(36).substr(2, 9);
             let html = `<div style="margin-left: 20px;">`;
-            html += `<span class="json-toggle" style="color:var(--color-blue); cursor:pointer;" onclick="toggleJson('${id}')">▼</span> ${isArray ? '[' : '{'}`;
+            html += `<span class="json-toggle" onclick="toggleJson('${id}')">▼</span> ${isArray ? '[' : '{'}`;
             html += `<div id="${id}">`;
             for (let k in obj) {
                 html += `<div><span style="color:#c084fc">${isArray ? '' : '"'+k+'": '}</span>${renderCollapsibleJson(obj[k], level+1, openAll)}</div>`;
@@ -641,10 +596,17 @@
             document.getElementById('json-compare-result').innerHTML = res ? "✅ Identical" : "❌ Different";
         }
 
+        function copyToClipboard() {
+            const text = document.getElementById('jwt-decode-display').innerText;
+            navigator.clipboard.writeText(text);
+            alert("Copied!");
+        }
+
         // --- Init ---
         document.addEventListener('DOMContentLoaded', () => {
-             // Initial setup if needed
+            // UI Initialization
         });
     </script>
 </body>
 </html>
+
