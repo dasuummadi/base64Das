@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DevTool Pro | Dashboard</title>
+    <title>DevTool Pro | Ultimate Suite</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700&display=swap">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
@@ -82,11 +82,11 @@
         }
 
         .nav-sidebar h2 {
-            font-size: 12px;
+            font-size: 11px;
             text-transform: uppercase;
             letter-spacing: 1px;
             color: var(--text-dim);
-            margin: 20px 0 12px 12px;
+            margin: 20px 0 8px 12px;
         }
 
         .nav-link {
@@ -102,7 +102,7 @@
             margin-bottom: 2px;
         }
 
-        .nav-link i { margin-right: 12px; font-size: 20px; }
+        .nav-link i { margin-right: 12px; font-size: 18px; }
         .nav-link:hover { background: #F9FAFB; }
         .nav-link.active { background: var(--primary-light); color: var(--primary); }
 
@@ -120,12 +120,11 @@
             border-bottom: 1px solid var(--border);
         }
 
-        header h1 { margin: 0; font-size: 28px; font-weight: 600; letter-spacing: -0.5px; }
+        header h1 { margin: 0; font-size: 28px; font-weight: 600; }
         header p { color: var(--text-dim); margin-top: 8px; font-size: 15px; }
 
         .content-body { padding: 40px; max-width: 1100px; }
 
-        /* --- UI Components --- */
         .card {
             background: #FFFFFF;
             border: 1px solid var(--border);
@@ -151,6 +150,19 @@
 
         textarea:focus, input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 4px #F4EBFF; }
 
+        .result-box {
+            background: #F9FAFB;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            min-height: 80px;
+            color: #475467;
+            overflow-x: auto;
+        }
+
         button {
             background: var(--primary);
             color: white;
@@ -160,109 +172,161 @@
             font-weight: 600;
             cursor: pointer;
             margin-right: 8px;
+            margin-bottom: 8px;
         }
 
         button:hover { background: #6941C6; }
+        .btn-outline { background: white; color: #344054; border-color: #D0D5DD; }
 
-        .result-box {
-            background: #F9FAFB;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 16px;
-            font-family: 'JetBrains Mono', 'Monaco', monospace;
-            font-size: 13px;
-            white-space: pre-wrap;
-            min-height: 80px;
-            color: #475467;
-        }
+        .section { display: none; }
+        .section.active { display: block; animation: fadeIn 0.2s ease; }
 
-        .section { display: none; animation: fadeIn 0.2s ease-out; }
-        .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+        .json-toggle { color: var(--primary); cursor: pointer; margin-right: 5px; }
     </style>
 </head>
 <body>
 
     <aside class="icon-sidebar">
         <div class="logo-box"><i class="ph-fill ph-terminal-window"></i></div>
-        <div class="icon-item active" title="Tools"><i class="ph ph-squares-four"></i></div>
-        <div class="icon-item" title="Files"><i class="ph ph-folder"></i></div>
-        <div class="icon-item" title="Analytics"><i class="ph ph-chart-bar"></i></div>
-        <div class="icon-item" style="margin-top: auto;"><i class="ph ph-user-circle"></i></div>
+        <div class="icon-item active"><i class="ph ph-squares-four"></i></div>
+        <div class="icon-item"><i class="ph ph-file-code"></i></div>
+        <div class="icon-item" style="margin-top: auto;"><i class="ph ph-user"></i></div>
     </aside>
 
     <aside class="nav-sidebar">
-        <h2>Encoding & Crypto</h2>
+        <h2>General</h2>
         <div class="nav-link active" onclick="switchTab('text', this)"><i class="ph ph-text-t"></i> Base64 Text</div>
         <div class="nav-link" onclick="switchTab('image', this)"><i class="ph ph-image"></i> Base64 Image</div>
         <div class="nav-link" onclick="switchTab('pdf', this)"><i class="ph ph-file-pdf"></i> Base64 PDF</div>
-        <div class="nav-link" onclick="switchTab('crypto', this)"><i class="ph ph-lock-key"></i> AES Encryption</div>
-        
-        <h2>Developer Utils</h2>
-        <div class="nav-link" onclick="switchTab('json', this)"><i class="ph ph-code"></i> JSON Beautifier</div>
-        <div class="nav-link" onclick="switchTab('jwt', this)"><i class="ph ph-fingerprint"></i> JWT Studio</div>
-        <div class="nav-link" onclick="switchTab('zip', this)"><i class="ph ph-file-zip"></i> Zip Converter</div>
         <div class="nav-link" onclick="switchTab('xml', this)"><i class="ph ph-file-code"></i> XML Tools</div>
+
+        <h2>Security</h2>
+        <div class="nav-link" onclick="switchTab('crypto', this)"><i class="ph ph-lock"></i> AES Encryption</div>
+        <div class="nav-link" onclick="switchTab('jwt', this)"><i class="ph ph-identification-card"></i> JWT Studio</div>
+
+        <h2>Data & Files</h2>
+        <div class="nav-link" onclick="switchTab('json', this)"><i class="ph ph-brackets-curly"></i> JSON Toolkit</div>
+        <div class="nav-link" onclick="switchTab('zip', this)"><i class="ph ph-file-zip"></i> Zip / Unzip</div>
     </aside>
 
     <main class="main-content">
         <header>
             <h1 id="page-title">Base64 Text</h1>
-            <p id="page-desc">Easily encode and decode text strings between UTF-8 and Base64.</p>
+            <p id="page-desc">Convert plain text to Base64 and vice-versa.</p>
         </header>
 
         <div class="content-body">
             
             <div id="text-section" class="section active">
                 <div class="card">
-                    <label>Input Text</label>
-                    <textarea id="text-input" rows="5" placeholder="Paste your text here..."></textarea>
-                    <div style="margin-bottom: 20px;">
-                        <button onclick="runText('encode')">Encode</button>
-                        <button style="background:white; color:#344054; border-color:#D0D5DD;" onclick="runText('decode')">Decode</button>
-                    </div>
-                    <label>Output</label>
-                    <div id="text-output" class="result-box">Result will appear here...</div>
+                    <label>Raw Text</label>
+                    <textarea id="text-input" rows="5"></textarea>
+                    <button onclick="encodeText()">Encode</button>
+                    <button class="btn-outline" onclick="decodeText()">Decode</button>
+                    <label style="margin-top:20px;">Result</label>
+                    <textarea id="text-result" class="result-box" rows="5" readonly></textarea>
                 </div>
             </div>
 
             <div id="image-section" class="section">
                 <div class="card">
                     <label>Upload Image</label>
-                    <input type="file" id="image-file" accept="image/*">
-                    <button onclick="runImage()">Convert to Base64</button>
-                    <textarea id="image-output" rows="8" style="margin-top:20px;" placeholder="Base64 string..." readonly></textarea>
+                    <input type="file" id="image-input" accept="image/*">
+                    <button onclick="encodeImage()">To Base64</button>
+                    <textarea id="image-b64-res" rows="6" placeholder="Base64 will appear here..."></textarea>
+                    <button class="btn-outline" onclick="decodeImage()">Preview & Download</button>
+                    <div style="margin-top:20px; text-align:center;">
+                        <img id="image-preview" style="max-width:100%; border-radius:8px; display:none;">
+                        <a id="image-download" style="display:none; color:var(--primary); font-weight:600;">Download Image</a>
+                    </div>
+                </div>
+            </div>
+
+            <div id="pdf-section" class="section">
+                <div class="card">
+                    <label>PDF File</label>
+                    <input type="file" id="pdf-input" accept=".pdf">
+                    <button onclick="encodePDF()">Encode PDF</button>
+                    <textarea id="pdf-b64-res" rows="5"></textarea>
+                    <hr style="margin:20px 0; border:0; border-top:1px solid var(--border);">
+                    <label>Paste Base64 PDF</label>
+                    <textarea id="pdf-b64-input" rows="5"></textarea>
+                    <button class="btn-outline" onclick="decodePDF()">Download PDF</button>
+                    <a id="pdf-link" style="display:none;">Click to Download</a>
                 </div>
             </div>
 
             <div id="crypto-section" class="section">
                 <div class="card">
                     <label>Message</label>
-                    <textarea id="msg-input" rows="3"></textarea>
-                    <label>Secret Key (32 Chars for AES-256)</label>
-                    <input type="text" id="msg-key" placeholder="Enter key...">
-                    <button onclick="runCrypto('enc')">Encrypt</button>
-                    <button style="background:white; color:#344054; border-color:#D0D5DD;" onclick="runCrypto('dec')">Decrypt</button>
-                    <div id="crypto-output" class="result-box" style="margin-top:20px;">Result...</div>
+                    <textarea id="aes-msg" rows="3"></textarea>
+                    <label>Key (32 Chars)</label>
+                    <input type="text" id="aes-key">
+                    <button onclick="aesEncrypt()">Encrypt</button>
+                    <button class="btn-outline" onclick="aesDecrypt()">Decrypt</button>
+                    <label style="margin-top:20px;">Cipher/Plaintext</label>
+                    <div id="aes-res" class="result-box"></div>
                 </div>
             </div>
 
             <div id="json-section" class="section">
                 <div class="card">
-                    <label>JSON Input</label>
-                    <textarea id="json-input" rows="10" placeholder='{"test": 123}'></textarea>
-                    <button onclick="runJson()">Format & Beautify</button>
-                    <div id="json-output" class="result-box" style="margin-top:20px;"></div>
+                    <div class="grid-2">
+                        <div>
+                            <label>JSON / String Input</label>
+                            <textarea id="json-input" rows="12"></textarea>
+                        </div>
+                        <div>
+                            <label>View / Compare</label>
+                            <textarea id="json-input-2" rows="12" placeholder="Second JSON for comparison..."></textarea>
+                        </div>
+                    </div>
+                    <button onclick="jsonBeautify()">Beautify</button>
+                    <button class="btn-outline" onclick="jsonToString()">To String</button>
+                    <button class="btn-outline" onclick="stringToJson()">To JSON</button>
+                    <button class="btn-outline" onclick="jsonCompare()">Compare JSONs</button>
+                    <div id="json-res" class="result-box" style="margin-top:20px;"></div>
+                </div>
+            </div>
+
+            <div id="zip-section" class="section">
+                <div class="card">
+                    <label>Zip Files</label>
+                    <input type="file" id="zip-files" multiple>
+                    <button onclick="createZip()">Create Zip & Base64</button>
+                    <textarea id="zip-b64-out" rows="5"></textarea>
+                    <hr style="margin:20px 0; border:0; border-top:1px solid var(--border);">
+                    <label>Extract Zip (File or Base64)</label>
+                    <input type="file" id="unzip-file">
+                    <textarea id="unzip-b64" rows="3" placeholder="Or paste Base64 here..."></textarea>
+                    <button onclick="unzipProcess()">Extract Files</button>
+                    <div id="unzip-list" style="margin-top:15px;"></div>
                 </div>
             </div>
 
             <div id="jwt-section" class="section">
                 <div class="card">
-                    <label>Credentials (username|id|license|pass)</label>
+                    <label>Payload (user|id|license|pass)</label>
                     <input type="text" id="jwt-creds">
-                    <button onclick="runJwt()">Generate JWT</button>
-                    <div id="jwt-output" class="result-box" style="margin-top:20px;"></div>
+                    <button onclick="jwtCreate()">Create JWT</button>
+                    <label style="margin-top:20px;">Token Decode</label>
+                    <textarea id="jwt-token" rows="3"></textarea>
+                    <button class="btn-outline" onclick="jwtDecode()">Decode JWT</button>
+                    <div id="jwt-res" class="result-box" style="margin-top:20px;"></div>
+                </div>
+            </div>
+
+            <div id="xml-section" class="section">
+                <div class="card">
+                    <div class="grid-2">
+                        <textarea id="xml-1" rows="10" placeholder="XML 1"></textarea>
+                        <textarea id="xml-2" rows="10" placeholder="XML 2"></textarea>
+                    </div>
+                    <button onclick="xmlEncode()">Encode XML 1</button>
+                    <button class="btn-outline" onclick="xmlCompare()">Compare XMLs</button>
+                    <div id="xml-res" class="result-box" style="margin-top:20px;"></div>
                 </div>
             </div>
 
@@ -273,63 +337,145 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.6.0/jszip.min.js"></script>
 
     <script>
-        // --- Navigation Logic ---
-        function switchTab(tabId, element) {
+        function switchTab(id, el) {
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            element.classList.add('active');
-
-            const title = element.innerText.trim();
-            document.getElementById('page-title').innerText = title;
-            document.getElementById('page-desc').innerText = `Professional ${title} management for software developers.`;
-
+            el.classList.add('active');
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            const target = document.getElementById(tabId + '-section');
-            if(target) target.classList.add('active');
+            document.getElementById(id + '-section').classList.add('active');
+            document.getElementById('page-title').innerText = el.innerText;
         }
 
-        // --- Operation Logic ---
-        function runText(mode) {
-            const input = document.getElementById('text-input').value;
-            const output = document.getElementById('text-output');
+        // --- Core Functions ---
+        const b64Regex = /^([0-9a-zA-Z+/]{4})*(?:(?:[0-9a-zA-Z+/]{2}==)|(?:[0-9a-zA-Z+/]{3}=))?$/;
+
+        function encodeText() {
+            document.getElementById('text-result').value = btoa(document.getElementById('text-input').value);
+        }
+        function decodeText() {
             try {
-                output.innerText = (mode === 'encode') ? btoa(input) : atob(input);
-            } catch(e) { output.innerText = "Error: Check your input format."; }
+                document.getElementById('text-result').value = atob(document.getElementById('text-input').value);
+            } catch(e) { alert("Invalid Base64"); }
         }
 
-        function runImage() {
-            const file = document.getElementById('image-file').files[0];
+        function encodeImage() {
+            const file = document.getElementById('image-input').files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = (e) => { document.getElementById('image-output').value = e.target.result.split(',')[1]; };
+                reader.onload = () => document.getElementById('image-b64-res').value = reader.result.split(',')[1];
                 reader.readAsDataURL(file);
             }
         }
-
-        function runCrypto(mode) {
-            const msg = document.getElementById('msg-input').value;
-            const key = document.getElementById('msg-key').value;
-            const out = document.getElementById('crypto-output');
-            if(key.length < 1) return alert("Enter a key");
-            
-            try {
-                if(mode === 'enc') out.innerText = CryptoJS.AES.encrypt(msg, key).toString();
-                else out.innerText = CryptoJS.AES.decrypt(msg, key).toString(CryptoJS.enc.Utf8) || "Invalid Key";
-            } catch(e) { out.innerText = "Error in Cipher."; }
+        function decodeImage() {
+            const b64 = document.getElementById('image-b64-res').value;
+            const img = document.getElementById('image-preview');
+            const dl = document.getElementById('image-download');
+            if (b64Regex.test(b64)) {
+                const src = 'data:image/jpeg;base64,' + b64;
+                img.src = src; img.style.display = 'block';
+                dl.href = src; dl.download = 'devtool-img.jpg'; dl.style.display = 'block';
+            }
         }
 
-        function runJson() {
-            const input = document.getElementById('json-input').value;
-            const output = document.getElementById('json-output');
-            try {
-                output.innerText = JSON.stringify(JSON.parse(input), null, 4);
-            } catch(e) { output.innerText = "Invalid JSON structure."; }
+        function encodePDF() {
+            const file = document.getElementById('pdf-input').files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = () => document.getElementById('pdf-b64-res').value = reader.result.split(',')[1];
+                reader.readAsDataURL(file);
+            }
+        }
+        function decodePDF() {
+            const b64 = document.getElementById('pdf-b64-input').value;
+            if (b64Regex.test(b64)) {
+                const data = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+                const blob = new Blob([data], { type: 'application/pdf' });
+                const url = URL.createObjectURL(blob);
+                const link = document.getElementById('pdf-link');
+                link.href = url; link.download = "decoded.pdf"; link.click();
+            }
         }
 
-        function runJwt() {
-            const creds = document.getElementById('jwt-creds').value;
+        function aesEncrypt() {
+            const msg = document.getElementById('aes-msg').value;
+            const key = document.getElementById('aes-key').value;
+            if (key.length !== 32) return alert("Key must be 32 chars");
+            document.getElementById('aes-res').innerText = CryptoJS.AES.encrypt(msg, key).toString();
+        }
+        function aesDecrypt() {
+            const msg = document.getElementById('aes-msg').value;
+            const key = document.getElementById('aes-key').value;
+            const dec = CryptoJS.AES.decrypt(msg, key).toString(CryptoJS.enc.Utf8);
+            document.getElementById('aes-res').innerText = dec || "Error: Check key/message";
+        }
+
+        function jsonBeautify() {
+            try {
+                const obj = JSON.parse(document.getElementById('json-input').value);
+                document.getElementById('json-res').innerText = JSON.stringify(obj, null, 4);
+            } catch(e) { document.getElementById('json-res').innerText = "Invalid JSON"; }
+        }
+        function jsonToString() {
+            try {
+                const obj = JSON.parse(document.getElementById('json-input').value);
+                document.getElementById('json-res').innerText = JSON.stringify(obj);
+            } catch(e) { alert("Invalid JSON"); }
+        }
+        function stringToJson() {
+            try {
+                const str = document.getElementById('json-input').value;
+                document.getElementById('json-res').innerText = JSON.stringify(JSON.parse(str), null, 4);
+            } catch(e) { alert("Invalid String"); }
+        }
+        function jsonCompare() {
+            const j1 = JSON.stringify(JSON.parse(document.getElementById('json-input').value));
+            const j2 = JSON.stringify(JSON.parse(document.getElementById('json-input-2').value));
+            document.getElementById('json-res').innerText = (j1 === j2) ? "✅ Identical" : "❌ Different";
+        }
+
+        async function createZip() {
+            const files = document.getElementById('zip-files').files;
+            const zip = new JSZip();
+            for (let f of files) zip.file(f.name, f);
+            const b64 = await zip.generateAsync({ type: "base64" });
+            document.getElementById('zip-b64-out').value = b64;
+        }
+
+        async function unzipProcess() {
+            const file = document.getElementById('unzip-file').files[0];
+            const b64 = document.getElementById('unzip-b64').value;
+            let data = file || (b64 ? await (await fetch("data:application/zip;base64," + b64)).blob() : null);
+            if (!data) return;
+            const zip = await JSZip.loadAsync(data);
+            const list = document.getElementById('unzip-list');
+            list.innerHTML = "";
+            zip.forEach(async (path, f) => {
+                const blob = await f.async("blob");
+                const url = URL.createObjectURL(blob);
+                list.innerHTML += `<a href="${url}" download="${path}" style="display:block; color:var(--primary); margin-bottom:5px;">📄 ${path}</a>`;
+            });
+        }
+
+        function jwtCreate() {
+            const creds = btoa(document.getElementById('jwt-creds').value);
             const header = btoa(JSON.stringify({alg:"HS256", typ:"JWT"}));
-            const payload = btoa(JSON.stringify({sub: btoa(creds), iat: Date.now()}));
-            document.getElementById('jwt-output').innerText = `${header}.${payload}.[signature]`;
+            const payload = btoa(JSON.stringify({name: creds, exp: Math.floor(Date.now()/1000)+3600}));
+            document.getElementById('jwt-res').innerText = `${header}.${payload}.SIGNATURE_STUB`;
+        }
+        function jwtDecode() {
+            const parts = document.getElementById('jwt-token').value.split('.');
+            if (parts.length >= 2) {
+                const p = JSON.parse(atob(parts[1]));
+                document.getElementById('jwt-res').innerText = `Decoded Name: ${atob(p.name)}\nExpiry: ${new Date(p.exp*1000).toLocaleString()}`;
+            }
+        }
+
+        function xmlCompare() {
+            const x1 = document.getElementById('xml-1').value.replace(/\s/g, '');
+            const x2 = document.getElementById('xml-2').value.replace(/\s/g, '');
+            document.getElementById('xml-res').innerText = (x1 === x2) ? "✅ Identical XML" : "❌ Different XML";
+        }
+        function xmlEncode() {
+            document.getElementById('xml-res').innerText = btoa(document.getElementById('xml-1').value);
         }
     </script>
 </body>
