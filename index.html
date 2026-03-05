@@ -8,15 +8,15 @@
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
         :root {
-            --primary: #7F56D9; /* Purple from reference */
+            --primary: #7F56D9;
             --primary-light: #F9F5FF;
-            --bg-main: #F2F4F7;
-            --sidebar-dark: #FFFFFF;
+            --bg-main: #F9FAFB;
+            --sidebar-bg: #FFFFFF;
             --border: #EAECF0;
             --text-main: #101828;
             --text-dim: #667085;
             --icon-sidebar-width: 80px;
-            --nav-sidebar-width: 240px;
+            --nav-sidebar-width: 260px;
         }
 
         * { box-sizing: border-box; transition: all 0.2s ease; }
@@ -31,7 +31,7 @@
             overflow: hidden;
         }
 
-        /* --- 1. Icon Sidebar (Leftmost) --- */
+        /* --- Sidebar 1: Global Icons --- */
         .icon-sidebar {
             width: var(--icon-sidebar-width);
             background: #FFFFFF;
@@ -68,10 +68,9 @@
             margin-bottom: 8px;
         }
 
-        .icon-item:hover { background: var(--primary-light); color: var(--primary); }
-        .icon-item.active { background: var(--primary-light); color: var(--primary); }
+        .icon-item:hover, .icon-item.active { background: var(--primary-light); color: var(--primary); }
 
-        /* --- 2. Nav Sidebar (Operations) --- */
+        /* --- Sidebar 2: Operations List --- */
         .nav-sidebar {
             width: var(--nav-sidebar-width);
             background: #FFFFFF;
@@ -79,18 +78,16 @@
             display: flex;
             flex-direction: column;
             padding: 24px 16px;
+            overflow-y: auto;
         }
 
         .nav-sidebar h2 {
-            font-size: 14px;
+            font-size: 12px;
             text-transform: uppercase;
             letter-spacing: 1px;
             color: var(--text-dim);
-            margin-bottom: 16px;
-            padding-left: 12px;
+            margin: 20px 0 12px 12px;
         }
-
-        .nav-group { margin-bottom: 24px; }
 
         .nav-link {
             display: flex;
@@ -102,24 +99,20 @@
             font-weight: 500;
             font-size: 14px;
             cursor: pointer;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
         }
 
-        .nav-link i { margin-right: 12px; font-size: 18px; }
-
+        .nav-link i { margin-right: 12px; font-size: 20px; }
         .nav-link:hover { background: #F9FAFB; }
-        .nav-link.active {
-            background: var(--primary-light);
-            color: var(--primary);
-        }
+        .nav-link.active { background: var(--primary-light); color: var(--primary); }
 
-        /* --- 3. Main Content Area --- */
+        /* --- Main Content --- */
         .main-content {
             flex: 1;
             display: flex;
             flex-direction: column;
-            overflow-y: auto;
             background: #FFFFFF;
+            overflow-y: auto;
         }
 
         header {
@@ -127,13 +120,10 @@
             border-bottom: 1px solid var(--border);
         }
 
-        header h1 { margin: 0; font-size: 30px; font-weight: 600; }
-        header p { color: var(--text-dim); margin: 8px 0 0 0; }
+        header h1 { margin: 0; font-size: 28px; font-weight: 600; letter-spacing: -0.5px; }
+        header p { color: var(--text-dim); margin-top: 8px; font-size: 15px; }
 
-        .content-body {
-            padding: 40px;
-            max-width: 1000px;
-        }
+        .content-body { padding: 40px; max-width: 1100px; }
 
         /* --- UI Components --- */
         .card {
@@ -141,25 +131,27 @@
             border: 1px solid var(--border);
             border-radius: 12px;
             padding: 24px;
-            box-shadow: 0px 1px 3px rgba(16, 24, 40, 0.1);
+            box-shadow: 0 1px 3px rgba(16,24,40,0.1);
+            margin-bottom: 24px;
         }
 
-        label { display: block; margin-bottom: 8px; font-weight: 500; font-size: 14px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+        label { display: block; margin-bottom: 8px; font-weight: 500; font-size: 14px; color: #344054; }
 
         textarea, input {
             width: 100%;
             border: 1px solid #D0D5DD;
             border-radius: 8px;
-            padding: 10px 14px;
+            padding: 12px;
             font-family: inherit;
             font-size: 14px;
-            margin-bottom: 20px;
-            box-shadow: 0px 1px 2px rgba(16, 24, 40, 0.05);
+            margin-bottom: 16px;
         }
 
-        textarea:focus { border-color: var(--primary); outline: none; ring: 4px var(--primary-light); }
+        textarea:focus, input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 4px #F4EBFF; }
 
-        .btn-primary {
+        button {
             background: var(--primary);
             color: white;
             border: 1px solid var(--primary);
@@ -167,168 +159,177 @@
             border-radius: 8px;
             font-weight: 600;
             cursor: pointer;
-            box-shadow: 0px 1px 2px rgba(16, 24, 40, 0.05);
+            margin-right: 8px;
         }
 
-        .btn-primary:hover { background: #6941C6; }
+        button:hover { background: #6941C6; }
 
         .result-box {
             background: #F9FAFB;
             border: 1px solid var(--border);
             border-radius: 8px;
             padding: 16px;
-            font-family: 'Monaco', monospace;
+            font-family: 'JetBrains Mono', 'Monaco', monospace;
             font-size: 13px;
-            color: #475467;
-            min-height: 100px;
             white-space: pre-wrap;
-            margin-top: 10px;
+            min-height: 80px;
+            color: #475467;
         }
 
-        .section { display: none; animation: fadeIn 0.3s ease; }
+        .section { display: none; animation: fadeIn 0.2s ease-out; }
         .section.active { display: block; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
     <aside class="icon-sidebar">
-        <div class="logo-box"><i class="ph-fill ph-cube"></i></div>
-        <div class="icon-item active"><i class="ph ph-layout"></i></div>
-        <div class="icon-item"><i class="ph ph-folder-simple"></i></div>
-        <div class="icon-item"><i class="ph ph-chart-pie-slice"></i></div>
-        <div class="icon-item"><i class="ph ph-users"></i></div>
-        <div class="icon-item" style="margin-top: auto;"><i class="ph ph-gear"></i></div>
+        <div class="logo-box"><i class="ph-fill ph-terminal-window"></i></div>
+        <div class="icon-item active" title="Tools"><i class="ph ph-squares-four"></i></div>
+        <div class="icon-item" title="Files"><i class="ph ph-folder"></i></div>
+        <div class="icon-item" title="Analytics"><i class="ph ph-chart-bar"></i></div>
+        <div class="icon-item" style="margin-top: auto;"><i class="ph ph-user-circle"></i></div>
     </aside>
 
     <aside class="nav-sidebar">
-        <h2>Operations</h2>
-        <div class="nav-group">
-            <div class="nav-link active" onclick="switchTab('text', this)">
-                <i class="ph ph-text-aa"></i> Base64 Text
-            </div>
-            <div class="nav-link" onclick="switchTab('image', this)">
-                <i class="ph ph-image"></i> Image to Base64
-            </div>
-            <div class="nav-link" onclick="switchTab('pdf', this)">
-                <i class="ph ph-file-pdf"></i> PDF Converter
-            </div>
-            <div class="nav-link" onclick="switchTab('json', this)">
-                <i class="ph ph-code"></i> JSON Beautifier
-            </div>
-            <div class="nav-link" onclick="switchTab('crypto', this)">
-                <i class="ph ph-lock"></i> AES Crypto
-            </div>
-        </div>
-
-        <h2 style="margin-top: 20px;">Utilities</h2>
-        <div class="nav-group">
-            <div class="nav-link" onclick="switchTab('zip', this)">
-                <i class="ph ph-file-zip"></i> Zip Explorer
-            </div>
-            <div class="nav-link" onclick="switchTab('jwt', this)">
-                <i class="ph ph-identification-badge"></i> JWT Studio
-            </div>
-        </div>
+        <h2>Encoding & Crypto</h2>
+        <div class="nav-link active" onclick="switchTab('text', this)"><i class="ph ph-text-t"></i> Base64 Text</div>
+        <div class="nav-link" onclick="switchTab('image', this)"><i class="ph ph-image"></i> Base64 Image</div>
+        <div class="nav-link" onclick="switchTab('pdf', this)"><i class="ph ph-file-pdf"></i> Base64 PDF</div>
+        <div class="nav-link" onclick="switchTab('crypto', this)"><i class="ph ph-lock-key"></i> AES Encryption</div>
+        
+        <h2>Developer Utils</h2>
+        <div class="nav-link" onclick="switchTab('json', this)"><i class="ph ph-code"></i> JSON Beautifier</div>
+        <div class="nav-link" onclick="switchTab('jwt', this)"><i class="ph ph-fingerprint"></i> JWT Studio</div>
+        <div class="nav-link" onclick="switchTab('zip', this)"><i class="ph ph-file-zip"></i> Zip Converter</div>
+        <div class="nav-link" onclick="switchTab('xml', this)"><i class="ph ph-file-code"></i> XML Tools</div>
     </aside>
 
     <main class="main-content">
         <header>
             <h1 id="page-title">Base64 Text</h1>
-            <p id="page-desc">Encode and decode text strings to Base64 format securely.</p>
+            <p id="page-desc">Easily encode and decode text strings between UTF-8 and Base64.</p>
         </header>
 
         <div class="content-body">
+            
             <div id="text-section" class="section active">
                 <div class="card">
                     <label>Input Text</label>
-                    <textarea id="text-input" rows="4" placeholder="Enter text here..."></textarea>
-                    
-                    <div style="display: flex; gap: 12px; margin-bottom: 24px;">
-                        <button class="btn-primary" onclick="processText('encode')">Encode</button>
-                        <button class="btn-primary" style="background: white; color: #344054; border-color: #D0D5DD;" onclick="processText('decode')">Decode</button>
+                    <textarea id="text-input" rows="5" placeholder="Paste your text here..."></textarea>
+                    <div style="margin-bottom: 20px;">
+                        <button onclick="runText('encode')">Encode</button>
+                        <button style="background:white; color:#344054; border-color:#D0D5DD;" onclick="runText('decode')">Decode</button>
                     </div>
-
-                    <label>Output Result</label>
-                    <div id="text-result" class="result-box">Waiting for input...</div>
+                    <label>Output</label>
+                    <div id="text-output" class="result-box">Result will appear here...</div>
                 </div>
             </div>
 
             <div id="image-section" class="section">
                 <div class="card">
-                    <label>Select Image</label>
-                    <input type="file" id="image-input" accept="image/*">
-                    <button class="btn-primary" onclick="encodeImage()">Generate Base64</button>
-                    
-                    <label style="margin-top: 24px;">Base64 String</label>
-                    <textarea id="image-result-string" rows="6" readonly></textarea>
+                    <label>Upload Image</label>
+                    <input type="file" id="image-file" accept="image/*">
+                    <button onclick="runImage()">Convert to Base64</button>
+                    <textarea id="image-output" rows="8" style="margin-top:20px;" placeholder="Base64 string..." readonly></textarea>
+                </div>
+            </div>
+
+            <div id="crypto-section" class="section">
+                <div class="card">
+                    <label>Message</label>
+                    <textarea id="msg-input" rows="3"></textarea>
+                    <label>Secret Key (32 Chars for AES-256)</label>
+                    <input type="text" id="msg-key" placeholder="Enter key...">
+                    <button onclick="runCrypto('enc')">Encrypt</button>
+                    <button style="background:white; color:#344054; border-color:#D0D5DD;" onclick="runCrypto('dec')">Decrypt</button>
+                    <div id="crypto-output" class="result-box" style="margin-top:20px;">Result...</div>
                 </div>
             </div>
 
             <div id="json-section" class="section">
                 <div class="card">
-                    <label>Paste JSON</label>
-                    <textarea id="json-input" rows="10" placeholder='{"key": "value"}'></textarea>
-                    <button class="btn-primary" onclick="beautifyJSON()">Beautify JSON</button>
-                    
-                    <label style="margin-top: 24px;">Formatted Output</label>
-                    <div id="json-result" class="result-box"></div>
+                    <label>JSON Input</label>
+                    <textarea id="json-input" rows="10" placeholder='{"test": 123}'></textarea>
+                    <button onclick="runJson()">Format & Beautify</button>
+                    <div id="json-output" class="result-box" style="margin-top:20px;"></div>
                 </div>
             </div>
 
+            <div id="jwt-section" class="section">
+                <div class="card">
+                    <label>Credentials (username|id|license|pass)</label>
+                    <input type="text" id="jwt-creds">
+                    <button onclick="runJwt()">Generate JWT</button>
+                    <div id="jwt-output" class="result-box" style="margin-top:20px;"></div>
+                </div>
             </div>
+
+        </div>
     </main>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.6.0/jszip.min.js"></script>
+
     <script>
+        // --- Navigation Logic ---
         function switchTab(tabId, element) {
-            // Update Active Link
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
             element.classList.add('active');
 
-            // Update Header
             const title = element.innerText.trim();
             document.getElementById('page-title').innerText = title;
-            document.getElementById('page-desc').innerText = `Manage your ${title} operations with ease.`;
+            document.getElementById('page-desc').innerText = `Professional ${title} management for software developers.`;
 
-            // Switch Visibility
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             const target = document.getElementById(tabId + '-section');
             if(target) target.classList.add('active');
         }
 
-        // --- Core Logic ---
-        function processText(mode) {
+        // --- Operation Logic ---
+        function runText(mode) {
             const input = document.getElementById('text-input').value;
-            const output = document.getElementById('text-result');
+            const output = document.getElementById('text-output');
             try {
-                if(mode === 'encode') output.innerText = btoa(input);
-                else output.innerText = atob(input);
-            } catch(e) {
-                output.innerText = "Error: Invalid format for operation.";
-            }
+                output.innerText = (mode === 'encode') ? btoa(input) : atob(input);
+            } catch(e) { output.innerText = "Error: Check your input format."; }
         }
 
-        function beautifyJSON() {
-            const input = document.getElementById('json-input').value;
-            const output = document.getElementById('json-result');
-            try {
-                const obj = JSON.parse(input);
-                output.innerText = JSON.stringify(obj, null, 4);
-            } catch(e) {
-                output.innerText = "Error: Invalid JSON string.";
-            }
-        }
-
-        function encodeImage() {
-            const file = document.getElementById('image-input').files[0];
+        function runImage() {
+            const file = document.getElementById('image-file').files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('image-result-string').value = e.target.result.split(',')[1];
-                };
+                reader.onload = (e) => { document.getElementById('image-output').value = e.target.result.split(',')[1]; };
                 reader.readAsDataURL(file);
             }
+        }
+
+        function runCrypto(mode) {
+            const msg = document.getElementById('msg-input').value;
+            const key = document.getElementById('msg-key').value;
+            const out = document.getElementById('crypto-output');
+            if(key.length < 1) return alert("Enter a key");
+            
+            try {
+                if(mode === 'enc') out.innerText = CryptoJS.AES.encrypt(msg, key).toString();
+                else out.innerText = CryptoJS.AES.decrypt(msg, key).toString(CryptoJS.enc.Utf8) || "Invalid Key";
+            } catch(e) { out.innerText = "Error in Cipher."; }
+        }
+
+        function runJson() {
+            const input = document.getElementById('json-input').value;
+            const output = document.getElementById('json-output');
+            try {
+                output.innerText = JSON.stringify(JSON.parse(input), null, 4);
+            } catch(e) { output.innerText = "Invalid JSON structure."; }
+        }
+
+        function runJwt() {
+            const creds = document.getElementById('jwt-creds').value;
+            const header = btoa(JSON.stringify({alg:"HS256", typ:"JWT"}));
+            const payload = btoa(JSON.stringify({sub: btoa(creds), iat: Date.now()}));
+            document.getElementById('jwt-output').innerText = `${header}.${payload}.[signature]`;
         }
     </script>
 </body>
