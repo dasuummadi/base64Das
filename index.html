@@ -4,1555 +4,438 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DevTool Pro | Base64 & Crypto Suite</title>
-    <link rel="stylesheet" href="[fonts.googleapis.com](https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap)">
-    <link rel="stylesheet" href="[cdnjs.cloudflare.com](https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css)">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700&display=swap">
     <style>
         :root {
             --primary: #6366f1;
-            --primary-light: #818cf8;
-            --primary-dark: #4f46e5;
-            --secondary: #f472b6;
-            --accent: #06b6d4;
-            --bg-main: #f8fafc;
-            --bg-card: #ffffff;
-            --bg-input: #f1f5f9;
-            --border: #e2e8f0;
-            --border-focus: #6366f1;
-            --text-main: #1e293b;
-            --text-secondary: #64748b;
-            --text-muted: #94a3b8;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --error: #ef4444;
-            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
-            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.05);
-            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -4px rgba(0,0,0,0.05);
-            --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.05);
-            --gradient-primary: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
-            --gradient-secondary: linear-gradient(135deg, #06b6d4 0%, #6366f1 100%);
-            --gradient-warm: linear-gradient(135deg, #f472b6 0%, #fb923c 100%);
+            --primary-hover: #4f46e5;
+            --bg: #0f172a;
+            --card: rgba(30, 41, 59, 0.7);
+            --border: rgba(255, 255, 255, 0.1);
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --accent-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
 
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background: var(--bg-main);
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.15) 0px, transparent 50%);
             color: var(--text-main);
             min-height: 100vh;
-            overflow-x: hidden;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
         }
 
-        /* === WELCOME SCREEN === */
+        /* --- Welcome Screen --- */
         #welcome-screen {
             position: fixed;
             inset: 0;
-            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+             background: #000;
+           /*--- background: var(--bg); ----*/
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 9999;
-            animation: welcomeFadeOut 0.6s cubic-bezier(0.4, 0, 0.2, 1) 2.5s forwards;
-        }
-
-        .welcome-logo {
-            width: 100px;
-            height: 100px;
-            background: var(--gradient-primary);
-            border-radius: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 30px;
-            animation: logoFloat 2s ease-in-out infinite, logoEnter 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.3);
-        }
-
-        .welcome-logo i {
-            font-size: 45px;
-            color: white;
+            animation: fadeOut 0.8s ease-in-out 3s forwards;
         }
 
         #welcome-title {
-            font-size: clamp(2.5rem, 8vw, 4rem);
+            font-size: clamp(2rem, 8vw, 4rem);
             font-weight: 800;
-            background: var(--gradient-primary);
+            background: var(--accent-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: -0.03em;
-            animation: titleEnter 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
+            letter-spacing: -0.02em;
+            margin: 0;
         }
 
-        .welcome-subtitle {
-            color: var(--text-secondary);
-            font-weight: 500;
-            margin-top: 12px;
-            font-size: 1.1rem;
-            animation: subtitleEnter 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s both;
-        }
-
-        .welcome-loader {
-            margin-top: 40px;
-            display: flex;
-            gap: 8px;
-            animation: subtitleEnter 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.6s both;
-        }
-
-        .welcome-loader span {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: var(--primary);
-            animation: loaderBounce 1.4s ease-in-out infinite;
-        }
-
-        .welcome-loader span:nth-child(2) { animation-delay: 0.16s; }
-        .welcome-loader span:nth-child(3) { animation-delay: 0.32s; }
-
-        /* === MAIN CONTAINER === */
-        .app-container {
-            opacity: 0;
-            animation: appEnter 0.8s cubic-bezier(0.4, 0, 0.2, 1) 2.8s forwards;
-        }
-
-        /* === SIDEBAR === */
-        .sidebar {
-            position: fixed;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 280px;
-            background: var(--bg-card);
-            border-right: 1px solid var(--border);
-            padding: 24px 16px;
+        /* --- App Shell --- */
+        .container {
+            width: 95%;
+            max-width: 1300px;
+            height: 90vh;
+            background: var(--card);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
             display: flex;
             flex-direction: column;
-            z-index: 100;
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .sidebar-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 0 12px 24px;
-            border-bottom: 1px solid var(--border);
-            margin-bottom: 24px;
-        }
-
-        .sidebar-logo {
-            width: 44px;
-            height: 44px;
-            background: var(--gradient-primary);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-        }
-
-        .sidebar-logo i {
-            font-size: 20px;
-            color: white;
-        }
-
-        .sidebar-brand {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--text-main);
-        }
-
-        .sidebar-version {
-            font-size: 0.7rem;
-            background: var(--bg-input);
-            padding: 2px 8px;
-            border-radius: 20px;
-            color: var(--text-muted);
-            margin-left: auto;
-        }
-
-        .nav-section {
-            margin-bottom: 20px;
-        }
-
-        .nav-section-title {
-            font-size: 0.7rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--text-muted);
-            padding: 0 12px;
-            margin-bottom: 8px;
-        }
-
-        .nav-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            color: var(--text-secondary);
-            font-weight: 500;
-            font-size: 0.9rem;
-            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            animation: fadeIn 1s ease 3.2s forwards;
             overflow: hidden;
+            position: relative;
         }
 
-        .nav-item::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 3px;
-            background: var(--gradient-primary);
-            border-radius: 0 3px 3px 0;
-            transform: scaleY(0);
-            transition: transform 0.2s ease;
-        }
-
-        .nav-item:hover {
-            background: var(--bg-input);
-            color: var(--text-main);
-        }
-
-        .nav-item.active {
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
-            color: var(--primary);
-        }
-
-        .nav-item.active::before {
-            transform: scaleY(1);
-        }
-
-        .nav-item i {
-            width: 20px;
-            text-align: center;
-            font-size: 1rem;
-        }
-
-        .nav-item .badge {
-            margin-left: auto;
-            background: var(--gradient-warm);
-            color: white;
-            font-size: 0.65rem;
-            padding: 2px 8px;
-            border-radius: 20px;
-            font-weight: 600;
-        }
-
-        /* === MAIN CONTENT === */
-        .main-content {
-            margin-left: 280px;
-            min-height: 100vh;
-            padding: 24px 40px;
-            background: var(--bg-main);
-        }
-
-        .content-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 32px;
-            padding-bottom: 24px;
+        .header-bar {
+            padding: 20px 40px;
             border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(15, 23, 42, 0.3);
         }
 
-        .page-title {
-            font-size: 1.75rem;
+        .header-bar h1 {
+            font-size: 1.25rem;
+            margin: 0;
             font-weight: 700;
             color: var(--text-main);
-            display: flex;
-            align-items: center;
-            gap: 12px;
         }
 
-        .page-title-icon {
-            width: 48px;
-            height: 48px;
-            background: var(--gradient-primary);
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        /* --- Custom Select --- */
+        select#operation-selector {
+            background: rgba(255, 255, 255, 0.05);
             color: white;
-            font-size: 1.25rem;
-            box-shadow: var(--shadow-lg);
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 12px;
-        }
-
-        .btn-icon {
-            width: 44px;
-            height: 44px;
+            padding: 10px 20px;
             border-radius: 12px;
             border: 1px solid var(--border);
-            background: var(--bg-card);
-            color: var(--text-secondary);
+            outline: none;
             cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            font-family: inherit;
         }
 
-        .btn-icon:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
+        /* FIX: Ensure dropdown options have a solid background for Windows visibility */
+        select#operation-selector option {
+            background-color: #1e293b;
+            color: white;
         }
 
-        /* === SECTIONS === */
+        /* --- Main Content Area --- */
+        .content-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 40px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--border) transparent;
+        }
+
         .section {
             display: none;
-            animation: sectionEnter 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            max-width: 1000px;
+            margin: 0 auto;
+            animation: slideUp 0.4s ease-out;
         }
 
-        .section.active {
-            display: block;
+        .section h2 {
+            font-size: 1.75rem;
+            margin-top: 0;
+            margin-bottom: 25px;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .card {
-            background: var(--bg-card);
-            border-radius: 20px;
-            padding: 28px;
-            margin-bottom: 24px;
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow-sm);
-            transition: all 0.3s ease;
-        }
-
-        .card:hover {
-            box-shadow: var(--shadow-lg);
-            transform: translateY(-2px);
-        }
-
-        .card-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .card-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1rem;
-        }
-
-        .card-icon.encode { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; }
-        .card-icon.decode { background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); color: white; }
-        .card-icon.encrypt { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; }
-        .card-icon.compare { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; }
-
-        .card-title {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--text-main);
-        }
-
-        .card-subtitle {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-        }
-
-        /* === FORM ELEMENTS === */
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-label {
-            display: block;
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--text-secondary);
-            margin-bottom: 8px;
-        }
-
-        textarea, input[type="text"], input[type="number"] {
+        /* --- Form Elements --- */
+        textarea, input[type="text"], input[type="number"], input[type="file"] {
             width: 100%;
-            background: var(--bg-input);
-            border: 2px solid transparent;
-            border-radius: 14px;
-            padding: 16px 18px;
-            color: var(--text-main);
-            font-size: 0.95rem;
-            font-family: inherit;
-            transition: all 0.2s ease;
-            resize: vertical;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 15px;
+            color: white;
+            font-size: 15px;
+            margin-bottom: 15px;
+            font-family: 'Inter', sans-serif;
         }
 
-        textarea:focus, input[type="text"]:focus, input[type="number"]:focus {
-            outline: none;
+        textarea:focus, input:focus {
             border-color: var(--primary);
-            background: var(--bg-card);
-            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
-        }
-
-        textarea::placeholder, input::placeholder {
-            color: var(--text-muted);
+            outline: none;
+            background: rgba(0, 0, 0, 0.4);
         }
 
         .result-textarea {
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(168, 85, 247, 0.05) 100%) !important;
-            border: 2px dashed var(--border) !important;
-            font-family: 'SF Mono', 'Fira Code', monospace;
-            font-size: 0.9rem;
+            background: rgba(99, 102, 241, 0.05) !important;
+            border-color: rgba(99, 102, 241, 0.2) !important;
+            color: #a5b4fc !important;
+            font-family: monospace;
         }
 
-        .result-textarea:focus {
-            border-style: solid !important;
-        }
-
-        /* === FILE INPUT === */
-        .file-upload {
-            position: relative;
-            border: 2px dashed var(--border);
-            border-radius: 16px;
-            padding: 40px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            background: var(--bg-input);
-        }
-
-        .file-upload:hover {
-            border-color: var(--primary);
-            background: rgba(99, 102, 241, 0.05);
-        }
-
-        .file-upload.dragover {
-            border-color: var(--primary);
-            background: rgba(99, 102, 241, 0.1);
-            transform: scale(1.02);
-        }
-
-        .file-upload input[type="file"] {
-            position: absolute;
-            inset: 0;
-            opacity: 0;
-            cursor: pointer;
-        }
-
-        .file-upload-icon {
-            width: 60px;
-            height: 60px;
-            background: var(--gradient-primary);
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 16px;
+        button {
+            background: var(--primary);
             color: white;
-            font-size: 1.5rem;
-        }
-
-        .file-upload-text {
+            padding: 12px 24px;
+            border-radius: 10px;
+            border: none;
             font-weight: 600;
-            color: var(--text-main);
-            margin-bottom: 4px;
-        }
-
-        .file-upload-hint {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-        }
-
-        /* === BUTTONS === */
-        .btn {
+            cursor: pointer;
             display: inline-flex;
             align-items: center;
-            justify-content: center;
-            gap: 10px;
-            padding: 14px 28px;
-            border-radius: 12px;
-            border: none;
-            font-family: inherit;
-            font-size: 0.95rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
+            margin: 5px;
         }
 
-        .btn::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 100%);
-            opacity: 0;
-            transition: opacity 0.2s ease;
-        }
-
-        .btn:hover::before {
-            opacity: 1;
-        }
-
-        .btn-primary {
-            background: var(--gradient-primary);
-            color: white;
-            box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
-        }
-
-        .btn-primary:hover {
+        button:hover {
+            background: var(--primary-hover);
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+            box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3);
         }
 
-        .btn-secondary {
-            background: var(--bg-input);
-            color: var(--text-main);
-            border: 1px solid var(--border);
+        /* --- Progress Bar --- */
+        .progress-bar-container {
+            height: 3px;
+            background: rgba(255,255,255,0.05);
+            width: 100%;
         }
 
-        .btn-secondary:hover {
-            background: var(--bg-card);
-            border-color: var(--primary);
-            color: var(--primary);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
+        .progress-bar {
+            height: 100%;
+            background: var(--accent-gradient);
+            width: 0;
+            transition: width 0.4s ease;
         }
 
-        .btn-success {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: white;
-            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
-        }
-
-        .btn-success:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
-        }
-
-        .btn-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-top: 20px;
-        }
-
-        /* === GRID === */
+        /* --- Tool Grid (2-Column) --- */
         .grid-2 {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 24px;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
         }
 
-        /* === DIVIDER === */
-        .divider {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            margin: 32px 0;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            font-weight: 500;
+        /* --- Animations --- */
+        @keyframes fadeOut { to { opacity: 0; visibility: hidden; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Mobile Adjustments */
+        @media (max-width: 768px) {
+            .grid-2 { grid-template-columns: 1fr; }
+            .header-bar { flex-direction: column; gap: 15px; text-align: center; }
+            .container { height: 95vh; }
         }
 
-        .divider::before, .divider::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: var(--border);
-        }
-
-        /* === PREVIEW AREA === */
-        .preview-area {
-            background: var(--bg-input);
-            border-radius: 16px;
-            padding: 24px;
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .preview-area img {
-            max-width: 100%;
-            border-radius: 12px;
-            box-shadow: var(--shadow-lg);
-        }
-
-        /* === DOWNLOAD LINK === */
-        .download-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 12px 24px;
-            background: var(--gradient-secondary);
-            color: white;
-            text-decoration: none;
-            border-radius: 10px;
-            font-weight: 600;
-            margin-top: 16px;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 14px rgba(6, 182, 212, 0.4);
-        }
-
-        .download-link:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(6, 182, 212, 0.4);
-        }
-
-        /* === JSON VIEWER === */
-        .json-viewer {
-            background: var(--bg-input);
-            border-radius: 14px;
-            padding: 20px;
-            font-family: 'SF Mono', 'Fira Code', monospace;
-            font-size: 0.85rem;
-            max-height: 500px;
-            overflow: auto;
-            border: 1px solid var(--border);
-        }
-
-        .json-toggle {
+        /* Specific Component Styles */
+        #unzipped-files-container a {
             color: var(--primary);
-            cursor: pointer;
-            margin-right: 6px;
-            user-select: none;
-            font-weight: bold;
-        }
-
-        .json-key { color: #7c3aed; }
-        .json-string { color: #059669; }
-        .json-number { color: #d97706; }
-        .json-boolean { color: #dc2626; }
-        .json-null { color: var(--text-muted); }
-
-        /* === COMPARE RESULT === */
-        .compare-result {
-            padding: 20px;
-            border-radius: 14px;
-            text-align: center;
-            font-weight: 600;
-            font-size: 1.1rem;
-        }
-
-        .compare-result.match {
-            background: rgba(16, 185, 129, 0.1);
-            color: var(--success);
-            border: 2px solid rgba(16, 185, 129, 0.3);
-        }
-
-        .compare-result.diff {
-            background: rgba(239, 68, 68, 0.1);
-            color: var(--error);
-            border: 2px solid rgba(239, 68, 68, 0.3);
-        }
-
-        /* === UNZIPPED FILES === */
-        .file-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-top: 16px;
-        }
-
-        .file-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 14px 18px;
-            background: var(--bg-input);
-            border-radius: 12px;
             text-decoration: none;
-            color: var(--text-main);
-            transition: all 0.2s ease;
+            background: rgba(255,255,255,0.05);
+            padding: 10px;
+            border-radius: 8px;
+            display: block;
+            margin-bottom: 5px;
         }
 
-        .file-item:hover {
-            background: rgba(99, 102, 241, 0.1);
-            transform: translateX(4px);
-        }
-
-        .file-item i {
-            color: var(--primary);
-        }
-
-        /* === MOBILE MENU === */
-        .mobile-menu-btn {
-            display: none;
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            width: 56px;
-            height: 56px;
-            border-radius: 16px;
-            background: var(--gradient-primary);
-            color: white;
-            border: none;
-            font-size: 1.25rem;
-            cursor: pointer;
-            z-index: 1000;
-            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
-        }
-
-        .sidebar-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 99;
-        }
-
-        /* === ANIMATIONS === */
-        @keyframes welcomeFadeOut {
-            to { opacity: 0; visibility: hidden; pointer-events: none; }
-        }
-
-        @keyframes logoFloat {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-
-        @keyframes logoEnter {
-            from { opacity: 0; transform: scale(0.5) rotate(-10deg); }
-            to { opacity: 1; transform: scale(1) rotate(0); }
-        }
-
-        @keyframes titleEnter {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes subtitleEnter {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes loaderBounce {
-            0%, 80%, 100% { transform: scale(0.6); opacity: 0.5; }
-            40% { transform: scale(1); opacity: 1; }
-        }
-
-        @keyframes appEnter {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes sectionEnter {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* === RESPONSIVE === */
-        @media (max-width: 1024px) {
-            .sidebar {
-                transform: translateX(-100%);
-            }
-
-            .sidebar.open {
-                transform: translateX(0);
-            }
-
-            .sidebar-overlay.open {
-                display: block;
-            }
-
-            .main-content {
-                margin-left: 0;
-                padding: 20px;
-            }
-
-            .mobile-menu-btn {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-
-            .grid-2 {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* === TOAST === */
-        .toast {
-            position: fixed;
-            bottom: 24px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: var(--text-main);
-            color: white;
-            padding: 14px 28px;
-            border-radius: 12px;
-            font-weight: 500;
-            z-index: 10000;
-            opacity: 0;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: var(--shadow-xl);
-        }
-
-        .toast.show {
-            transform: translateX(-50%) translateY(0);
-            opacity: 1;
-        }
-
-        .toast.success { background: var(--success); }
-        .toast.error { background: var(--error); }
+        .json-toggle { color: var(--primary); margin-right: 5px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <!-- Welcome Screen -->
     <div id="welcome-screen">
-        <div class="welcome-logo">
-            <i class="fas fa-code"></i>
-        </div>
-        <h1 id="welcome-title">DevTool Pro</h1>
-        <p class="welcome-subtitle">Developed By EL-OLAM</p>
-        <div class="welcome-loader">
-            <span></span>
-            <span></span>
-            <span></span>
-        </div>
+        <h1 id="welcome-title">DevTool Suite</h1>
+        <p style="color: var(--text-dim); font-weight: 500; margin-top: 15px;">Developed By El-olam</p>
     </div>
 
-    <!-- App Container -->
-    <div class="app-container">
-        
-        <!-- Sidebar Overlay (Mobile) -->
-        <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+    <div class="container">
+        <div class="header-bar">
+            <h1>Toolkit v2.0</h1>
+            <select id="operation-selector" onchange="showSection()">
+                <option value="">Select an Operation</option>
+                <option value="text">Base64 Encode/Decode</option>
+                <option value="image">Base64 Image</option>
+                <option value="pdf">Base64 PDF</option>
+                <option value="xml">XML Encode/Decode</option>
+                <option value="message">AES Encryption</option>
+                <option value="zip">Zip File Converter</option>
+                <option value="unzip">Unzip Explorer</option>
+                <option value="jwt">JWT Studio</option>
+                <option value="json2str">JSON to String</option>
+                <option value="str2json">String to JSON</option>
+                <option value="jsonbeautify">JSON Beautifier</option>
+                <option value="jsoncompare">JSON Compare</option>
+                <option value="xmlcompare">XML Compare</option>
+            </select>
+        </div>
 
-        <!-- Sidebar -->
-        <aside class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <div class="sidebar-logo">
-                    <i class="fas fa-code"></i>
-                </div>
-                <span class="sidebar-brand">DevTool Pro</span>
-                <span class="sidebar-version">v2.0</span>
-            </div>
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
 
-            <nav>
-                <div class="nav-section">
-                    <div class="nav-section-title">Encoding</div>
-                    <div class="nav-item active" data-section="text">
-                        <i class="fas fa-font"></i>
-                        <span>Base64 Text</span>
-                    </div>
-                    <div class="nav-item" data-section="image">
-                        <i class="fas fa-image"></i>
-                        <span>Base64 Image</span>
-                    </div>
-                    <div class="nav-item" data-section="pdf">
-                        <i class="fas fa-file-pdf"></i>
-                        <span>Base64 PDF</span>
-                    </div>
-                    <div class="nav-item" data-section="xml">
-                        <i class="fas fa-code"></i>
-                        <span>XML Encode</span>
-                    </div>
-                </div>
-
-                <div class="nav-section">
-                    <div class="nav-section-title">Security</div>
-                    <div class="nav-item" data-section="message">
-                        <i class="fas fa-lock"></i>
-                        <span>AES Encryption</span>
-                    </div>
-                    <div class="nav-item" data-section="jwt">
-                        <i class="fas fa-key"></i>
-                        <span>JWT Studio</span>
-                        <span class="badge">PRO</span>
-                    </div>
-                </div>
-
-                <div class="nav-section">
-                    <div class="nav-section-title">Files</div>
-                    <div class="nav-item" data-section="zip">
-                        <i class="fas fa-file-archive"></i>
-                        <span>Zip Converter</span>
-                    </div>
-                    <div class="nav-item" data-section="unzip">
-                        <i class="fas fa-box-open"></i>
-                        <span>Unzip Explorer</span>
-                    </div>
-                </div>
-
-                <div class="nav-section">
-                    <div class="nav-section-title">JSON Tools</div>
-                    <div class="nav-item" data-section="jsonbeautify">
-                        <i class="fas fa-magic"></i>
-                        <span>JSON Beautifier</span>
-                    </div>
-                    <div class="nav-item" data-section="json2str">
-                        <i class="fas fa-compress-alt"></i>
-                        <span>JSON → String</span>
-                    </div>
-                    <div class="nav-item" data-section="str2json">
-                        <i class="fas fa-expand-alt"></i>
-                        <span>String → JSON</span>
-                    </div>
-                    <div class="nav-item" data-section="jsoncompare">
-                        <i class="fas fa-not-equal"></i>
-                        <span>JSON Compare</span>
-                    </div>
-                    <div class="nav-item" data-section="xmlcompare">
-                        <i class="fas fa-columns"></i>
-                        <span>XML Compare</span>
-                    </div>
-                </div>
-            </nav>
-        </aside>
-
-        <!-- Main Content -->
-        <main class="main-content">
+        <div class="content-body">
             
-            <!-- Base64 Text Section -->
-            <div id="text-section" class="section active">
-                <div class="content-header">
-                    <h1 class="page-title">
-                        <div class="page-title-icon"><i class="fas fa-font"></i></div>
-                        Base64 Text
-                    </h1>
-                </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-icon encode"><i class="fas fa-arrow-up"></i></div>
-                        <div>
-                            <div class="card-title">Encode Text</div>
-                            <div class="card-subtitle">Convert plain text to Base64</div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Input Text</label>
-                        <textarea id="text-input" rows="4" placeholder="Enter text to encode..."></textarea>
-                    </div>
-                    <div class="btn-group">
-                        <button class="btn btn-primary" onclick="encodeText()">
-                            <i class="fas fa-arrow-right"></i> Encode
-                        </button>
-                    </div>
-                    <div class="form-group" style="margin-top: 20px;">
-                        <label class="form-label">Encoded Result</label>
-                        <textarea class="result-textarea" id="encoded-text-result" rows="4" placeholder="Encoded result will appear here..."></textarea>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-icon decode"><i class="fas fa-arrow-down"></i></div>
-                        <div>
-                            <div class="card-title">Decode Text</div>
-                            <div class="card-subtitle">Convert Base64 back to plain text</div>
-                        </div>
-                    </div>
-                    <div class="btn-group">
-                        <button class="btn btn-secondary" onclick="decodeText()">
-                            <i class="fas fa-arrow-left"></i> Decode
-                        </button>
-                    </div>
-                    <div class="form-group" style="margin-top: 20px;">
-                        <label class="form-label">Decoded Result</label>
-                        <textarea class="result-textarea" id="decoded-text-result" rows="4" placeholder="Decoded result will appear here..."></textarea>
-                    </div>
-                </div>
+            <div id="text-section" class="section">
+                <h2>Base64 Text</h2>
+                <textarea id="text-input" rows="4" placeholder="Enter text to encode..."></textarea>
+                <button onclick="encodeText()">Encode</button>
+                <textarea class="result-textarea" id="encoded-text-result" placeholder="Encoded result..."></textarea>
+                <button onclick="decodeText()">Decode</button>
+                <textarea class="result-textarea" id="decoded-text-result" placeholder="Decoded result..."></textarea>
             </div>
 
-            <!-- Base64 Image Section -->
             <div id="image-section" class="section">
-                <div class="content-header">
-                    <h1 class="page-title">
-                        <div class="page-title-icon"><i class="fas fa-image"></i></div>
-                        Base64 Image
-                    </h1>
-                </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-icon encode"><i class="fas fa-upload"></i></div>
-                        <div>
-                            <div class="card-title">Image to Base64</div>
-                            <div class="card-subtitle">Upload an image to convert</div>
-                        </div>
-                    </div>
-                    <div class="file-upload" id="image-dropzone">
-                        <input type="file" id="image-input" accept="image/*,.tiff,.tif">
-                        <div class="file-upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
-                        <div class="file-upload-text">Drop your image here or click to browse</div>
-                        <div class="file-upload-hint">Supports JPG, PNG, GIF, TIFF</div>
-                    </div>
-                    <div class="btn-group">
-                        <button class="btn btn-primary" onclick="encodeImage()">
-                            <i class="fas fa-cog"></i> Generate Base64
-                        </button>
-                    </div>
-                    <div class="form-group" style="margin-top: 20px;">
-                        <label class="form-label">Base64 Output</label>
-                        <textarea class="result-textarea" id="image-encoded-result" rows="6" placeholder="Base64 will appear here..."></textarea>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-icon decode"><i class="fas fa-eye"></i></div>
-                        <div>
-                            <div class="card-title">Preview & Download</div>
-                            <div class="card-subtitle">Decode Base64 to view image</div>
-                        </div>
-                    </div>
-                    <div class="btn-group">
-                        <button class="btn btn-success" onclick="decodeImage()">
-                            <i class="fas fa-image"></i> Preview Image
-                        </button>
-                    </div>
-                    <div class="preview-area" style="display: none;" id="image-preview-area">
-                        <canvas id="canvas" style="display:none;"></canvas>
-                        <img id="image-result" src="#" alt="Preview">
-                        <br>
-                        <a id="download-link" class="download-link" style="display: none;">
-                            <i class="fas fa-download"></i> Download Image
-                        </a>
-                    </div>
+                <h2>Image to Base64</h2>
+                <input type="file" id="image-input" accept="image/*,.tiff,.tif">
+                <button onclick="encodeImage()">Generate Base64</button>
+                <textarea class="result-textarea" id="image-encoded-result" placeholder="Base64 will appear here..."></textarea>
+                <button onclick="decodeImage()">Preview & Download</button>
+                <div style="margin-top: 20px; text-align: center;">
+                    <canvas id="canvas" style="display:none;"></canvas>
+                    <img id="image-result" src="#" alt="Preview" style="display:none; max-width: 100%; border-radius: 12px; border: 1px solid var(--border);">
+                    <div id="image-download-indicator" style="display:none; color: var(--primary);">Preparing...</div>
+                    <a id="download-link" style="display:none; color: var(--primary); text-decoration: none; font-weight: bold; margin-top: 10px;">Download Image</a>
                 </div>
             </div>
 
-            <!-- PDF Section -->
             <div id="pdf-section" class="section">
-                <div class="content-header">
-                    <h1 class="page-title">
-                        <div class="page-title-icon"><i class="fas fa-file-pdf"></i></div>
-                        PDF Converter
-                    </h1>
-                </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-icon encode"><i class="fas fa-arrow-up"></i></div>
-                        <div>
-                            <div class="card-title">PDF to Base64</div>
-                            <div class="card-subtitle">Convert PDF file to Base64 string</div>
-                        </div>
-                    </div>
-                    <div class="file-upload">
-                        <input type="file" id="pdf-input" accept=".pdf">
-                        <div class="file-upload-icon"><i class="fas fa-file-pdf"></i></div>
-                        <div class="file-upload-text">Drop your PDF here or click to browse</div>
-                        <div class="file-upload-hint">PDF files only</div>
-                    </div>
-                    <div class="btn-group">
-                        <button class="btn btn-primary" onclick="encodePDF()">
-                            <i class="fas fa-cog"></i> Encode PDF
-                        </button>
-                    </div>
-                    <div class="form-group" style="margin-top: 20px;">
-                        <label class="form-label">Base64 Output</label>
-                        <textarea class="result-textarea" id="pdf-encoded-result" rows="6"></textarea>
-                    </div>
-                </div>
-
-                <div class="divider">OR DECODE</div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-icon decode"><i class="fas fa-arrow-down"></i></div>
-                        <div>
-                            <div class="card-title">Base64 to PDF</div>
-                            <div class="card-subtitle">Decode Base64 string to PDF file</div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Paste Base64 PDF</label>
-                        <textarea id="pdf-encoded-input" rows="6" placeholder="Paste Base64 PDF to decode..."></textarea>
-                    </div>
-                    <div class="btn-group">
-                        <button class="btn btn-success" onclick="decodePDF()">
-                            <i class="fas fa-file-download"></i> Decode PDF
-                        </button>
-                    </div>
-                    <div style="margin-top: 20px;">
-                        <a id="pdf-result" class="download-link" style="display:none;">
-                            <i class="fas fa-download"></i> Download PDF
-                        </a>
-                        <a id="doc-result" class="download-link" style="display:none; margin-left: 12px;">
-                            <i class="fas fa-download"></i> Download DOC
-                        </a>
-                    </div>
+                <h2>PDF Converter</h2>
+                <input type="file" id="pdf-input" accept=".pdf">
+                <button onclick="encodePDF()">Encode PDF</button>
+                <textarea class="result-textarea" id="pdf-encoded-result"></textarea>
+                <hr style="border:0; border-top:1px solid var(--border); margin: 30px 0;">
+                <textarea id="pdf-encoded-input" placeholder="Paste Base64 PDF to decode..."></textarea>
+                <button onclick="decodePDF()">Decode PDF</button>
+                <div style="margin-top: 15px; display: flex; gap: 15px;">
+                    <a id="pdf-result" style="display:none; color: var(--primary);">Download PDF</a>
+                    <a id="doc-result" style="display:none; color: var(--primary);">Download DOC</a>
                 </div>
             </div>
 
-            <!-- JWT Section -->
             <div id="jwt-section" class="section">
-                <div class="content-header">
-                    <h1 class="page-title">
-                        <div class="page-title-icon"><i class="fas fa-key"></i></div>
-                        JWT Studio
-                    </h1>
+                <h2>JWT Studio</h2>
+                <textarea id="credentials-input" placeholder="Format: username|userid|userlicense|password"></textarea>
+                <div class="grid-2">
+                    <input type="text" id="jwt-secret-input" placeholder="Secret Key (Optional)">
+                    <input type="number" id="jwt-expiry-input" placeholder="Expiry (Hours)">
                 </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-icon encode"><i class="fas fa-plus"></i></div>
-                        <div>
-                            <div class="card-title">Create JWT</div>
-                            <div class="card-subtitle">Generate a new JSON Web Token</div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Credentials</label>
-                        <textarea id="credentials-input" rows="3" placeholder="Format: username|userid|userlicense|password"></textarea>
-                    </div>
-                    <div class="grid-2">
-                        <div class="form-group">
-                            <label class="form-label">Secret Key (Optional)</label>
-                            <input type="text" id="jwt-secret-input" placeholder="Enter secret key">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Expiry (Hours)</label>
-                            <input type="number" id="jwt-expiry-input" placeholder="e.g., 24">
-                        </div>
-                    </div>
-                    <div class="btn-group">
-                        <button class="btn btn-primary" onclick="createJwt()">
-                            <i class="fas fa-wand-magic-sparkles"></i> Generate JWT
-                        </button>
-                    </div>
-                    <div class="form-group" style="margin-top: 20px;">
-                        <label class="form-label">Generated Token</label>
-                        <textarea class="result-textarea" id="jwt-result" rows="4"></textarea>
-                    </div>
+                <button onclick="createJwt()">Create JWT</button>
+                <textarea class="result-textarea" id="jwt-result"></textarea>
+                <hr style="border:0; border-top:1px solid var(--border); margin: 30px 0;">
+                <textarea id="jwt-decode-input" placeholder="Paste JWT to Decode..."></textarea>
+                <button onclick="decodeJwt()">Decode JWT</button>
+                <div id="jwt-decode-result" class="result-textarea" style="padding: 15px; border-radius: 8px; margin-top: 10px;">
+                    <button onclick="copyToClipboard()" style="padding: 5px 10px; font-size: 12px;">Copy</button>
+                    <span id="jwt-decode-display"></span>
                 </div>
-
-                <div class="divider">OR DECODE</div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-icon decode"><i class="fas fa-unlock"></i></div>
-                        <div>
-                            <div class="card-title">Decode JWT</div>
-                            <div class="card-subtitle">Parse and view JWT contents</div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Paste JWT Token</label>
-                        <textarea id="jwt-decode-input" rows="4" placeholder="Paste JWT to decode..."></textarea>
-                    </div>
-                    <div class="btn-group">
-                        <button class="btn btn-success" onclick="decodeJwt()">
-                            <i class="fas fa-search"></i> Decode Token
-                        </button>
-                    </div>
-                    <div class="form-group" style="margin-top: 20px;">
-                        <label class="form-label">Decoded Payload</label>
-                        <div class="json-viewer" id="jwt-decode-result">
-                            <span id="jwt-decode-display"></span>
-                        </div>
-                        <div id="jwt-expiry" style="margin-top: 12px; color: var(--text-secondary);"></div>
-                    </div>
-                    <div class="btn-group">
-                        <button class="btn btn-secondary" onclick="copyToClipboard()">
-                            <i class="fas fa-copy"></i> Copy Payload
-                        </button>
-                    </div>
-                </div>
+                <div id="jwt-expiry" style="margin-top: 10px;"></div>
             </div>
 
-            <!-- Zip Section -->
             <div id="zip-section" class="section">
-                <div class="content-header">
-                    <h1 class="page-title">
-                        <div class="page-title-icon"><i class="fas fa-file-archive"></i></div>
-                        Zip Converter
-                    </h1>
-                </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-icon encode"><i class="fas fa-compress"></i></div>
-                        <div>
-                            <div class="card-title">Create Zip Base64</div>
-                            <div class="card-subtitle">Zip files and convert to Base64</div>
-                        </div>
-                    </div>
-                    <div class="file-upload">
-                        <input type="file" id="zip-input" multiple>
-                        <div class="file-upload-icon"><i class="fas fa-files"></i></div>
-                        <div class="file-upload-text">Drop files here or click to browse</div>
-                        <div class="file-upload-hint">Select multiple files to zip</div>
-                    </div>
-                    <div class="btn-group">
-                        <button class="btn btn-primary" onclick="zipFiles()">
-                            <i class="fas fa-cog"></i> Generate Zip Base64
-                        </button>
-                    </div>
-                    <div class="form-group" style="margin-top: 20px;">
-                        <label class="form-label">Base64 Output</label>
-                        <textarea class="result-textarea" id="zip-result" rows="6"></textarea>
-                    </div>
-                    <div class="btn-group">
-                        <button class="btn btn-success" onclick="decodeZipBase64()">
-                            <i class="fas fa-download"></i> Download Zip from Base64
-                        </button>
-                    </div>
-                    <a id="download-zip-link" class="download-link" style="display:none; margin-top: 16px;">
-                        <i class="fas fa-download"></i> Download Zip File
-                    </a>
-                </div>
+                <h2>Zip Converter</h2>
+                <input type="file" id="zip-input" multiple>
+                <button onclick="zipFiles()">Generate Zip Base64</button>
+                <textarea class="result-textarea" id="zip-result"></textarea>
+                <button onclick="decodeZipBase64()">Download Zip from Base64</button>
+                <a id="download-zip-link" style="display:none; color: var(--primary);">Download Zip File</a>
             </div>
 
-            <!-- AES Encryption Section -->
             <div id="message-section" class="section">
-                <div class="content-header">
-                    <h1 class="page-title">
-                        <div class="page-title-icon"><i class="fas fa-lock"></i></div>
-                        AES Encryption
-                    </h1>
-                </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-icon encrypt"><i class="fas fa-shield-halved"></i></div>
-                        <div>
-                            <div class="card-title">Encrypt Message</div>
-                            <div class="card-subtitle">Secure your message with AES-256</div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Message</label>
-                        <textarea id="message-input" rows="4" placeholder="Enter message to encrypt..."></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Encryption Key (32 characters)</label>
-                        <input type="text" id="key-input" placeholder="Enter your 32-character secret key">
-                    </div>
-                    <div class="btn-group">
-                        <button class="btn btn-primary" onclick="encryptMessage()">
-                            <i class="fas fa-lock"></i> Encrypt
-                        </button>
-                        <button class="btn btn-secondary" onclick="decryptMessage()">
-                            <i class="fas fa-unlock"></i> Decrypt
-                        </button>
-                    </div>
-                    <div class="form-group" style="margin-top: 20px;">
-                        <label class="form-label">Encrypted Result</label>
-                        <textarea class="result-textarea" id="encrypted-message-result" rows="4"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Decrypted Result</label>
-                        <textarea class="result-textarea" id="decrypted-message-result" rows="4"></textarea>
-                    </div>
-                </div>
+                <h2>AES Encryption</h2>
+                <textarea id="message-input" placeholder="Message to encrypt..."></textarea>
+                <input type="text" id="key-input" placeholder="32 Character Key">
+                <button onclick="encryptMessage()">Encrypt</button>
+                <textarea class="result-textarea" id="encrypted-message-result"></textarea>
+                <button onclick="decryptMessage()">Decrypt</button>
+                <textarea class="result-textarea" id="decrypted-message-result"></textarea>
             </div>
 
-            <!-- JSON Beautifier Section -->
             <div id="jsonbeautify-section" class="section">
-                <div class="content-header">
-                    <h1 class="page-title">
-                        <div class="page-title-icon"><i class="fas fa-magic"></i></div>
-                        JSON Beautifier
-                    </h1>
-                </div>
-
-                <div class="card">
-                    <div class="grid-2">
-                        <div class="form-group">
-                            <label class="form-label">Input JSON</label>
-                            <textarea id="jsonbeautify-input" rows="15" placeholder="Paste your JSON here..."></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Formatted Output</label>
-                            <div class="json-viewer" id="json-collapsible-viewer" style="min-height: 350px;"></div>
-                        </div>
+                <h2>JSON Beautifier</h2>
+                <div class="grid-2">
+                    <div style="position:relative;">
+                        <textarea id="jsonbeautify-input" rows="15" placeholder="Paste JSON..."></textarea>
+                        <div id="jsonbeautify-input-lines" style="display:none;"></div>
                     </div>
-                    <div class="btn-group">
-                        <button class="btn btn-primary" onclick="beautifyJson()">
-                            <i class="fas fa-wand-magic-sparkles"></i> Beautify JSON
-                        </button>
-                    </div>
+                    <div id="json-collapsible-viewer" style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 12px; overflow: auto; max-height: 500px;"></div>
                 </div>
+                <button onclick="beautifyJson()" style="margin-top: 15px;">Process JSON</button>
+                <div id="json-line-numbers" style="display:none;"></div>
             </div>
 
-            <!-- JSON Compare Section -->
             <div id="jsoncompare-section" class="section">
-                <div class="content-header">
-                    <h1 class="page-title">
-                        <div class="page-title-icon"><i class="fas fa-not-equal"></i></div>
-                        JSON Compare
-                    </h1>
+                <h2>JSON Compare</h2>
+                <div class="grid-2">
+                    <textarea id="json-compare-1" rows="10" placeholder="JSON 1"></textarea>
+                    <textarea id="json-compare-2" rows="10" placeholder="JSON 2"></textarea>
                 </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-icon compare"><i class="fas fa-code-compare"></i></div>
-                        <div>
-                            <div class="card-title">Compare Two JSON Objects</div>
-                            <div class="card-subtitle">Check if two JSON structures are identical</div>
-                        </div>
-                    </div>
-                    <div class="grid-2">
-                        <div class="form-group">
-                            <label class="form-label">JSON 1</label>
-                            <textarea id="json-compare-1" rows="10" placeholder="Paste first JSON..."></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">JSON 2</label>
-                            <textarea id="json-compare-2" rows="10" placeholder="Paste second JSON..."></textarea>
-                        </div>
-                    </div>
-                    <div class="btn-group">
-                        <button class="btn btn-primary" onclick="compareJson()">
-                            <i class="fas fa-scale-balanced"></i> Compare
-                        </button>
-                    </div>
-                    <div id="json-compare-result" style="margin-top: 20px;"></div>
-                </div>
+                <button onclick="compareJson()">Compare</button>
+                <div id="json-compare-result" style="margin-top: 15px;"></div>
             </div>
 
-            <!-- Unzip Section -->
             <div id="unzip-section" class="section">
-                <div class="content-header">
-                    <h1 class="page-title">
-                        <div class="page-title-icon"><i class="fas fa-box-open"></i></div>
-                        Unzip Explorer
-                    </h1>
-                </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-icon decode"><i class="fas fa-folder-open"></i></div>
-                        <div>
-                            <div class="card-title">Extract Zip Files</div>
-                            <div class="card-subtitle">Upload a zip or paste Base64</div>
-                        </div>
-                    </div>
-                    <div class="file-upload">
-                        <input type="file" id="unzip-input">
-                        <div class="file-upload-icon"><i class="fas fa-file-zipper"></i></div>
-                        <div class="file-upload-text">Drop your ZIP file here</div>
-                        <div class="file-upload-hint">ZIP files only</div>
-                    </div>
-                    <div class="btn-group">
-                        <button class="btn btn-primary" onclick="unzipFile()">
-                            <i class="fas fa-box-open"></i> Extract Zip
-                        </button>
-                    </div>
-
-                    <div class="divider">OR</div>
-
-                    <div class="form-group">
-                        <label class="form-label">Paste Zip Base64</label>
-                        <textarea id="unzip-base64-input" rows="4" placeholder="Or paste Zip Base64 string..."></textarea>
-                    </div>
-                    <div class="btn-group">
-                        <button class="btn btn-secondary" onclick="unzipFromBase64()">
-                            <i class="fas fa-box-open"></i> Extract from Base64
-                        </button>
-                    </div>
-                    <div class="file-list" id="unzipped-files-container"></div>
-                </div>
+                <h2>Unzip Files</h2>
+                <input type="file" id="unzip-input">
+                <button onclick="unzipFile()">Extract Zip</button>
+                <textarea id="unzip-base64-input" placeholder="Or paste Zip Base64..."></textarea>
+                <button onclick="unzipFromBase64()">Extract from Base64</button>
+                <div id="unzipped-files-container" style="margin-top: 15px;"></div>
             </div>
 
-            <!-- JSON to String Section -->
             <div id="json2str-section" class="section">
-                <div class="content-header">
-                    <h1 class="page-title">
-                        <div class="page-title-icon"><i class="fas fa-compress-alt"></i></div>
-                        JSON to String
-                    </h1>
-                </div>
-
-                <div class="card">
-                    <div class="form-group">
-                        <label class="form-label">Input JSON</label>
-                        <textarea id="json2str-input" rows="6" placeholder="Paste JSON object..."></textarea>
-                    </div>
-                    <div class="btn-group">
-                        <button class="btn btn-primary" onclick="jsonToString()">
-                            <i class="fas fa-compress"></i> Convert to String
-                        </button>
-                    </div>
-                    <div class="form-group" style="margin-top: 20px;">
-                        <label class="form-label">String Output</label>
-                        <textarea class="result-textarea" id="json2str-result" rows="6"></textarea>
-                    </div>
-                </div>
+                <h2>JSON to String</h2>
+                <textarea id="json2str-input" rows="5"></textarea>
+                <button onclick="jsonToString()">Convert</button>
+                <textarea class="result-textarea" id="json2str-result"></textarea>
             </div>
 
-            <!-- String to JSON Section -->
             <div id="str2json-section" class="section">
-                <div class="content-header">
-                    <h1 class="page-title">
-                        <div class="page-title-icon"><i class="fas fa-expand-alt"></i></div>
-                        String to JSON
-                    </h1>
-                </div>
-
-                <div class="card">
-                    <div class="form-group">
-                        <label class="form-label">Input String</label>
-                        <textarea id="str2json-input" rows="6" placeholder="Paste JSON string..."></textarea>
-                    </div>
-                    <div class="btn-group">
-                        <button class="btn btn-primary" onclick="stringToJson()">
-                            <i class="fas fa-expand"></i> Convert to JSON
-                        </button>
-                    </div>
-                    <div class="form-group" style="margin-top: 20px;">
-                        <label class="form-label">JSON Output</label>
-                        <textarea class="result-textarea" id="str2json-result" rows="6"></textarea>
-                    </div>
-                </div>
+                <h2>String to JSON</h2>
+                <textarea id="str2json-input" rows="5"></textarea>
+                <button onclick="stringToJson()">Convert</button>
+                <textarea class="result-textarea" id="str2json-result"></textarea>
             </div>
 
-            <!-- XML Compare Section -->
             <div id="xmlcompare-section" class="section">
-                <div class="content-header">
-                    <h1 class="page-title">
-                        <div class="page-title-icon"><i class="fas fa-columns"></i></div>
-                        XML Compare
-                    </h1>
+                <h2>XML Compare</h2>
+                <div class="grid-2">
+                    <textarea id="xml-compare-1" rows="10" placeholder="XML 1"></textarea>
+                    <textarea id="xml-compare-2" rows="10" placeholder="XML 2"></textarea>
                 </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-icon compare"><i class="fas fa-code-compare"></i></div>
-                        <div>
-                            <div class="card-title">Compare Two XML Documents</div>
-                            <div class="card-subtitle">Check if two XML structures are identical</div>
-                        </div>
-                    </div>
-                    <div class="grid-2">
-                        <div class="form-group">
-                            <label class="form-label">XML 1</label>
-                            <textarea id="xml-compare-1" rows="10" placeholder="Paste first XML..."></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">XML 2</label>
-                            <textarea id="xml-compare-2" rows="10" placeholder="Paste second XML..."></textarea>
-                        </div>
-                    </div>
-                    <div class="btn-group">
-                        <button class="btn btn-primary" onclick="compareXml()">
-                            <i class="fas fa-scale-balanced"></i> Compare
-                        </button>
-                    </div>
-                    <div id="xml-compare-result" style="margin-top: 20px;"></div>
-                </div>
+                <button onclick="compareXml()">Compare</button>
+                <div id="xml-compare-result" style="margin-top: 15px;"></div>
             </div>
 
-            <!-- XML Section -->
             <div id="xml-section" class="section">
-                <div class="content-header">
-                    <h1 class="page-title">
-                        <div class="page-title-icon"><i class="fas fa-code"></i></div>
-                        XML Base64
-                    </h1>
-                </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-icon encode"><i class="fas fa-arrow-up"></i></div>
-                        <div>
-                            <div class="card-title">XML Encode/Decode</div>
-                            <div class="card-subtitle">Convert XML to/from Base64</div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Input XML</label>
-                        <textarea id="xml-input" rows="6" placeholder="Paste XML content..."></textarea>
-                    </div>
-                    <div class="btn-group">
-                        <button class="btn btn-primary" onclick="encodeXML()">
-                            <i class="fas fa-arrow-up"></i> Encode
-                        </button>
-                        <button class="btn btn-secondary" onclick="decodeXML()">
-                            <i class="fas fa-arrow-down"></i> Decode
-                        </button>
-                    </div>
-                    <div class="form-group" style="margin-top: 20px;">
-                        <label class="form-label">Encoded Result</label>
-                        <textarea class="result-textarea" id="encoded-xml-result" rows="4"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Decoded Result</label>
-                        <textarea class="result-textarea" id="decoded-xml-result" rows="4"></textarea>
-                    </div>
-                </div>
+                <h2>XML Base64</h2>
+                <textarea id="xml-input" rows="5"></textarea>
+                <button onclick="encodeXML()">Encode</button>
+                <textarea class="result-textarea" id="encoded-xml-result"></textarea>
+                <button onclick="decodeXML()">Decode</button>
+                <textarea class="result-textarea" id="decoded-xml-result"></textarea>
             </div>
 
-        </main>
-
-        <!-- Mobile Menu Button -->
-        <button class="mobile-menu-btn" onclick="toggleSidebar()">
-            <i class="fas fa-bars"></i>
-        </button>
-
+        </div>
     </div>
 
-    <!-- Toast -->
-    <div class="toast" id="toast"></div>
-
-    <!-- Scripts -->
-    <script src="[cdnjs.cloudflare.com](https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js)"></script>
-    <script src="[cdnjs.cloudflare.com](https://cdnjs.cloudflare.com/ajax/libs/jszip/3.6.0/jszip.min.js)"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.6.0/jszip.min.js"></script>
     
     <script>
-        // === UI FUNCTIONS ===
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('open');
-            document.getElementById('sidebar-overlay').classList.toggle('open');
+        // --- CORE UI LOGIC ---
+        function showSection() {
+            const progressBar = document.getElementById('progress-bar');
+            const operation = document.getElementById('operation-selector').value;
+
+            progressBar.style.width = '100%';
+            
+            // Hide all
+            document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+            
+            clearAllInputs();
+
+            if (operation) {
+                const target = document.getElementById(operation + '-section');
+                if (target) target.style.display = 'block';
+            }
+
+            setTimeout(() => { progressBar.style.width = '0'; }, 600);
         }
 
-        function showToast(message, type = '') {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.className = 'toast ' + type;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3000);
+        // --- ORIGINAL LOGIC FUNCTIONS (MERGED) ---
+        function clearAllInputs() {
+            document.querySelectorAll('textarea, input[type="text"], input[type="number"]').forEach(i => i.value = '');
+            document.querySelectorAll('input[type="file"]').forEach(i => i.value = null);
+            document.querySelectorAll('.result-textarea span, #jwt-expiry, #unzipped-files-container, #json-compare-result, #xml-compare-result, #json-collapsible-viewer').forEach(c => c.innerHTML = '');
+            document.querySelectorAll('img, a').forEach(el => { if(el.id !== 'welcome-title') el.style.display = 'none'; });
         }
 
-        // Navigation
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.addEventListener('click', function() {
-                const section = this.dataset.section;
-                
-                // Update nav
-                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-                this.classList.add('active');
-                
-                // Update sections
-                document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-                document.getElementById(section + '-section').classList.add('active');
-                
-                // Close mobile sidebar
-                if (window.innerWidth <= 1024) {
-                    toggleSidebar();
-                }
-            });
-        });
-
-        // File upload drag & drop enhancement
-        document.querySelectorAll('.file-upload').forEach(zone => {
-            zone.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                zone.classList.add('dragover');
-            });
-            zone.addEventListener('dragleave', () => {
-                zone.classList.remove('dragover');
-            });
-            zone.addEventListener('drop', () => {
-                zone.classList.remove('dragover');
-            });
-        });
-
-        // === ORIGINAL LOGIC FUNCTIONS ===
         function isValidBase64String(base64String) {
             const regex = /^([0-9a-zA-Z+/]{4})*(?:(?:[0-9a-zA-Z+/]{2}==)|(?:[0-9a-zA-Z+/]{3}=))?$/;
             return regex.test(base64String);
@@ -1560,21 +443,13 @@
 
         function encodeText() {
             const text = document.getElementById('text-input').value;
-            if (!text) { showToast('Please enter text to encode', 'error'); return; }
             document.getElementById('encoded-text-result').value = btoa(text);
-            showToast('Text encoded successfully!', 'success');
         }
 
         function decodeText() {
             const encodedText = document.getElementById('encoded-text-result').value;
-            if (!encodedText) { showToast('Please enter Base64 to decode', 'error'); return; }
-            try { 
-                document.getElementById('decoded-text-result').value = atob(encodedText);
-                showToast('Text decoded successfully!', 'success');
-            } catch (e) { 
-                document.getElementById('decoded-text-result').value = 'Invalid Base64 string.';
-                showToast('Invalid Base64 string', 'error');
-            }
+            try { document.getElementById('decoded-text-result').value = atob(encodedText); } 
+            catch (e) { document.getElementById('decoded-text-result').value = 'Invalid Base64 string.'; }
         }
 
         function encodeImage() {
@@ -1584,11 +459,8 @@
                 reader.onload = function () {
                     const base64String = reader.result.split(',')[1];
                     document.getElementById('image-encoded-result').value = base64String;
-                    showToast('Image encoded successfully!', 'success');
                 };
                 reader.readAsDataURL(file);
-            } else {
-                showToast('Please select an image file', 'error');
             }
         }
 
@@ -1596,7 +468,6 @@
             const base64String = document.getElementById('image-encoded-result').value;
             const displayImage = document.getElementById('image-result');
             const downloadLink = document.getElementById('download-link');
-            const previewArea = document.getElementById('image-preview-area');
             
             if (isValidBase64String(base64String)) {
                 const imgSrc = 'data:image/jpeg;base64,' + base64String;
@@ -1604,12 +475,8 @@
                 displayImage.style.display = 'block';
                 downloadLink.href = imgSrc;
                 downloadLink.download = 'decoded-image.jpg';
-                downloadLink.style.display = 'inline-flex';
-                previewArea.style.display = 'block';
-                showToast('Image decoded successfully!', 'success');
-            } else { 
-                showToast('Invalid Image Base64', 'error'); 
-            }
+                downloadLink.style.display = 'inline-block';
+            } else { alert('Invalid Image Base64'); }
         }
 
         function encodePDF() {
@@ -1618,11 +485,8 @@
                 const reader = new FileReader();
                 reader.onload = function () {
                     document.getElementById('pdf-encoded-result').value = reader.result.split(',')[1];
-                    showToast('PDF encoded successfully!', 'success');
                 };
                 reader.readAsDataURL(file);
-            } else {
-                showToast('Please select a PDF file', 'error');
             }
         }
 
@@ -1634,87 +498,53 @@
                 const url = URL.createObjectURL(blob);
                 const pdfLink = document.getElementById('pdf-result');
                 pdfLink.href = url;
-                pdfLink.download = 'decoded.pdf';
-                pdfLink.style.display = 'inline-flex';
-                pdfLink.innerHTML = '<i class="fas fa-download"></i> Download PDF';
-                showToast('PDF decoded successfully!', 'success');
-            } else {
-                showToast('Invalid Base64 string', 'error');
+                pdfLink.style.display = 'inline-block';
+                pdfLink.textContent = "Download PDF";
             }
         }
 
         function encryptMessage() {
             const message = document.getElementById('message-input').value;
             const key = document.getElementById('key-input').value;
-            if (!message) { showToast('Please enter a message', 'error'); return; }
-            if (key.length !== 32) { showToast('Key must be exactly 32 characters', 'error'); return; }
+            if (key.length !== 32) { alert('Key must be 32 chars'); return; }
             document.getElementById('encrypted-message-result').value = CryptoJS.AES.encrypt(message, key).toString();
-            showToast('Message encrypted successfully!', 'success');
         }
 
         function decryptMessage() {
             const enc = document.getElementById('encrypted-message-result').value;
             const key = document.getElementById('key-input').value;
-            if (!enc) { showToast('No encrypted message to decrypt', 'error'); return; }
-            if (key.length !== 32) { showToast('Key must be exactly 32 characters', 'error'); return; }
             const dec = CryptoJS.AES.decrypt(enc, key).toString(CryptoJS.enc.Utf8);
-            document.getElementById('decrypted-message-result').value = dec || "Error: Check your key";
-            if (dec) showToast('Message decrypted successfully!', 'success');
-            else showToast('Decryption failed - check your key', 'error');
+            document.getElementById('decrypted-message-result').value = dec || "Error: Check key";
         }
 
         async function zipFiles() {
             const files = document.getElementById('zip-input').files;
-            if (files.length === 0) { showToast('Please select files to zip', 'error'); return; }
             const zip = new JSZip();
             for (const file of files) { zip.file(file.name, file); }
             const b64 = await zip.generateAsync({ type: "base64" });
             document.getElementById('zip-result').value = b64;
             const link = document.getElementById('download-zip-link');
             link.href = "data:application/zip;base64," + b64;
-            link.style.display = 'inline-flex';
+            link.style.display = 'inline-block';
             link.download = "files.zip";
-            link.innerHTML = '<i class="fas fa-download"></i> Download Zip File';
-            showToast('Files zipped successfully!', 'success');
-        }
-
-        function decodeZipBase64() {
-            const b64 = document.getElementById('zip-result').value;
-            if (!b64) { showToast('No Base64 to decode', 'error'); return; }
-            const link = document.getElementById('download-zip-link');
-            link.href = "data:application/zip;base64," + b64;
-            link.style.display = 'inline-flex';
-            link.download = "files.zip";
-            link.innerHTML = '<i class="fas fa-download"></i> Download Zip File';
-            showToast('Zip ready for download!', 'success');
         }
 
         function createJwt() {
             const credentials = document.getElementById('credentials-input').value;
-            if (!credentials) { showToast('Please enter credentials', 'error'); return; }
             const validity = parseInt(document.getElementById('jwt-expiry-input').value) || 60;
             const encodedUser = btoa(credentials);
             const header = btoa(JSON.stringify({ alg: "HS256", typ: "JWT" })).replace(/=/g, '');
             const payload = btoa(JSON.stringify({ name: encodedUser, exp: Math.floor(Date.now() / 1000) + (validity * 3600) })).replace(/=/g, '');
             document.getElementById('jwt-result').value = `${header}.${payload}.SIGNATURE_STUB`;
-            showToast('JWT generated successfully!', 'success');
         }
 
         function decodeJwt() {
             const jwt = document.getElementById('jwt-decode-input').value;
-            if (!jwt) { showToast('Please enter a JWT to decode', 'error'); return; }
             const parts = jwt.split('.');
             if (parts.length >= 2) {
-                try {
-                    const payload = JSON.parse(atob(parts[1]));
-                    document.getElementById('jwt-decode-display').innerText = atob(payload.name);
-                    document.getElementById('jwt-expiry').innerHTML = '<i class="fas fa-clock"></i> Expires: ' + new Date(payload.exp * 1000).toLocaleString();
-                    showToast('JWT decoded successfully!', 'success');
-                } catch(e) {
-                    showToast('Invalid JWT format', 'error');
-                }
-            } else {
-                showToast('Invalid JWT format', 'error');
+                const payload = JSON.parse(atob(parts[1]));
+                document.getElementById('jwt-decode-display').innerText = atob(payload.name);
+                document.getElementById('jwt-expiry').innerHTML = "Expiry: " + new Date(payload.exp * 1000).toLocaleString();
             }
         }
 
@@ -1724,27 +554,18 @@
             try {
                 const obj = JSON.parse(input);
                 viewer.innerHTML = renderCollapsibleJson(obj, 0, true);
-                showToast('JSON beautified!', 'success');
-            } catch (e) { 
-                viewer.innerHTML = '<span style="color: var(--error);">Invalid JSON</span>';
-                showToast('Invalid JSON format', 'error');
-            }
+            } catch (e) { viewer.innerHTML = "Invalid JSON"; }
         }
 
         function renderCollapsibleJson(obj, level = 0, openAll = false) {
-            if (typeof obj !== 'object' || obj === null) {
-                if (typeof obj === 'string') return `<span class="json-string">"${obj}"</span>`;
-                if (typeof obj === 'number') return `<span class="json-number">${obj}</span>`;
-                if (typeof obj === 'boolean') return `<span class="json-boolean">${obj}</span>`;
-                return `<span class="json-null">null</span>`;
-            }
+            if (typeof obj !== 'object' || obj === null) return `<span style="color:#818cf8;">${JSON.stringify(obj)}</span>`;
             const isArray = Array.isArray(obj);
             const id = 'json-' + Math.random().toString(36).substr(2, 9);
-            let html = `<div style="margin-left: ${level > 0 ? '20px' : '0'};">`;
+            let html = `<div style="margin-left: 20px;">`;
             html += `<span class="json-toggle" onclick="toggleJson('${id}')">▼</span> ${isArray ? '[' : '{'}`;
             html += `<div id="${id}">`;
             for (let k in obj) {
-                html += `<div style="margin-left: 20px;"><span class="json-key">${isArray ? '' : '"'+k+'": '}</span>${renderCollapsibleJson(obj[k], level+1, openAll)}</div>`;
+                html += `<div><span style="color:#c084fc">${isArray ? '' : '"'+k+'": '}</span>${renderCollapsibleJson(obj[k], level+1, openAll)}</div>`;
             }
             html += `</div>${isArray ? ']' : '}'}</div>`;
             return html;
@@ -1752,120 +573,43 @@
 
         function toggleJson(id) {
             const el = document.getElementById(id);
-            const toggle = el.previousElementSibling;
-            if (el.style.display === 'none') {
-                el.style.display = 'block';
-                toggle.textContent = '▼';
-            } else {
-                el.style.display = 'none';
-                toggle.textContent = '▶';
-            }
+            el.style.display = el.style.display === 'none' ? 'block' : 'none';
         }
 
         function jsonToString() {
             try {
                 const obj = JSON.parse(document.getElementById('json2str-input').value);
                 document.getElementById('json2str-result').value = JSON.stringify(obj);
-                showToast('Converted to string!', 'success');
-            } catch(e) { showToast('Invalid JSON', 'error'); }
+            } catch(e) { alert("Invalid JSON"); }
         }
 
         function stringToJson() {
             try {
                 const obj = JSON.parse(document.getElementById('str2json-input').value);
                 document.getElementById('str2json-result').value = JSON.stringify(obj, null, 4);
-                showToast('Converted to JSON!', 'success');
-            } catch(e) { showToast('Invalid string', 'error'); }
+            } catch(e) { alert("Invalid String"); }
         }
 
         function compareJson() {
-            try {
-                const j1 = JSON.parse(document.getElementById('json-compare-1').value);
-                const j2 = JSON.parse(document.getElementById('json-compare-2').value);
-                const res = JSON.stringify(j1) === JSON.stringify(j2);
-                const resultDiv = document.getElementById('json-compare-result');
-                if (res) {
-                    resultDiv.innerHTML = '<div class="compare-result match"><i class="fas fa-check-circle"></i> JSON objects are identical</div>';
-                } else {
-                    resultDiv.innerHTML = '<div class="compare-result diff"><i class="fas fa-times-circle"></i> JSON objects are different</div>';
-                }
-            } catch(e) {
-                showToast('Invalid JSON in one or both fields', 'error');
-            }
-        }
-
-        function compareXml() {
-            const x1 = document.getElementById('xml-compare-1').value.trim();
-            const x2 = document.getElementById('xml-compare-2').value.trim();
-            const resultDiv = document.getElementById('xml-compare-result');
-            if (x1 === x2) {
-                resultDiv.innerHTML = '<div class="compare-result match"><i class="fas fa-check-circle"></i> XML documents are identical</div>';
-            } else {
-                resultDiv.innerHTML = '<div class="compare-result diff"><i class="fas fa-times-circle"></i> XML documents are different</div>';
-            }
-        }
-
-        function encodeXML() {
-            const xml = document.getElementById('xml-input').value;
-            if (!xml) { showToast('Please enter XML to encode', 'error'); return; }
-            document.getElementById('encoded-xml-result').value = btoa(xml);
-            showToast('XML encoded!', 'success');
-        }
-
-        function decodeXML() {
-            const encoded = document.getElementById('encoded-xml-result').value;
-            if (!encoded) { showToast('Please enter Base64 to decode', 'error'); return; }
-            try {
-                document.getElementById('decoded-xml-result').value = atob(encoded);
-                showToast('XML decoded!', 'success');
-            } catch(e) {
-                showToast('Invalid Base64', 'error');
-            }
-        }
-
-        async function unzipFile() {
-            const file = document.getElementById('unzip-input').files[0];
-            if (!file) { showToast('Please select a zip file', 'error'); return; }
-            const zip = await JSZip.loadAsync(file);
-            displayUnzippedFiles(zip);
-        }
-
-        async function unzipFromBase64() {
-            const b64 = document.getElementById('unzip-base64-input').value;
-            if (!b64) { showToast('Please enter Base64', 'error'); return; }
-            try {
-                const zip = await JSZip.loadAsync(b64, {base64: true});
-                displayUnzippedFiles(zip);
-            } catch(e) {
-                showToast('Invalid zip Base64', 'error');
-            }
-        }
-
-        function displayUnzippedFiles(zip) {
-            const container = document.getElementById('unzipped-files-container');
-            container.innerHTML = '';
-            zip.forEach((relativePath, zipEntry) => {
-                if (!zipEntry.dir) {
-                    zipEntry.async('blob').then(blob => {
-                        const url = URL.createObjectURL(blob);
-                        const link = document.createElement('a');
-                        link.href = url;
-                        link.download = zipEntry.name;
-                        link.className = 'file-item';
-                        link.innerHTML = `<i class="fas fa-file"></i> ${zipEntry.name}`;
-                        container.appendChild(link);
-                    });
-                }
-            });
-            showToast('Files extracted!', 'success');
+            const j1 = JSON.parse(document.getElementById('json-compare-1').value);
+            const j2 = JSON.parse(document.getElementById('json-compare-2').value);
+            const res = JSON.stringify(j1) === JSON.stringify(j2);
+            document.getElementById('json-compare-result').innerHTML = res ? "✅ Identical" : "❌ Different";
         }
 
         function copyToClipboard() {
             const text = document.getElementById('jwt-decode-display').innerText;
-            if (!text) { showToast('Nothing to copy', 'error'); return; }
             navigator.clipboard.writeText(text);
-            showToast('Copied to clipboard!', 'success');
+            alert("Copied!");
         }
+
+        // --- Init ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // UI Initialization
+        });
     </script>
 </body>
 </html>
+
+
+
